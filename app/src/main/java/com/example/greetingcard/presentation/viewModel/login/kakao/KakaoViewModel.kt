@@ -46,7 +46,6 @@ class KakaoViewModel(
                 } else {
                     getUserInfo()
                     loginSuccess = true
-//                    navController.navigate("create_plan")
                 }
             }
         } else {
@@ -74,6 +73,7 @@ class KakaoViewModel(
             UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
         }
     }
+
 
     fun getUserInfo() {
         UserApiClient.instance.me { user, error ->
