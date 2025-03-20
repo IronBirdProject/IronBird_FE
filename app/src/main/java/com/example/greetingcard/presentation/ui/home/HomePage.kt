@@ -31,7 +31,9 @@ import com.example.greetingcard.presentation.viewModel.home.HomeViewModel
 
 @Composable
 fun HomePage(navController: NavHostController, homeViewModel: HomeViewModel = viewModel()) {
+    // 탭 별로 liststate 선언
     val listStates = List(homeViewModel.tabs.size) { rememberLazyListState() }
+
     Scaffold(
         containerColor = Color.White,
 
@@ -42,7 +44,6 @@ fun HomePage(navController: NavHostController, homeViewModel: HomeViewModel = vi
 
         // 플로팅 버튼
         floatingActionButton = {
-            // 플래닝 탭에서만 보이도록 설정
             // TODO: 추후 포스팅 탭에서 가장 가까운 여행 일정 페이지로 이동하는 플로팅 버튼 생성 예정
             if (homeViewModel.selectedTabIndex == 0) {
                 CreatePlanFloatingButton {

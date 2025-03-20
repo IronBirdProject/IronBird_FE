@@ -43,11 +43,11 @@ fun PostingTab(homeViewModel: HomeViewModel, listState: LazyListState) {
     val searchQuery = homeViewModel.searchQuery
 
     val postList by homeViewModel.allPostList.observeAsState(emptyList())
+    println("포스팅 탭 listState: $listState")
 
     LazyColumn(
         state = listState,
     ) {
-        println("포스팅 탭 listState: $listState")
         item {
             MyTravelList(
                 destinations = myTravelList,

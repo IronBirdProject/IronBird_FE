@@ -1,10 +1,12 @@
 package com.example.greetingcard.presentation.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddToPhotos
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -20,6 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -40,15 +45,14 @@ fun CustomAppBar(
     navController: NavHostController,
     listState: LazyListState,
 ) {
-    println("CustomAppBar listState: $listState")
     // 탭 목록
     val tabs = homeViewModel.tabs
     // 현재 선택된 탭 인덱스
     val selectedTabIndex = homeViewModel.selectedTabIndex
-    // 스크롤 상태에 따라 테두리 표시 여부 결정
-    val hasScrolled =
-        listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
-
+    // scroll여부 판단 변수 (selectedTabIndex) 값에 따라 hasScrolled를 다시 계산
+    val hasScrolled by remember(selectedTabIndex) {
+        derivedStateOf { listState.firstVisibleItemScrollOffset > 0 }
+    }
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -57,6 +61,7 @@ fun CustomAppBar(
         modifier = Modifier.drawWithContent {
             drawContent()
             if (hasScrolled) {
+                println("hasScrolled True")
                 drawLine(
                     color = Color.LightGray,
                     start = Offset(0f, size.height),
@@ -68,7 +73,7 @@ fun CustomAppBar(
         title = {
             // 상단 탭 바
             TabRow(
-                modifier = Modifier.fillMaxWidth(0.63f),
+                modifier = Modifier.fillMaxWidth(0.7f),
                 selectedTabIndex = selectedTabIndex,
                 containerColor = Color.White,
                 contentColor = Color.Black,
@@ -104,6 +109,14 @@ fun CustomAppBar(
             }
         },
         actions = {
+            Icon(
+                Icons.Default.AddToPhotos,
+                modifier = Modifier.clickable {
+                    navController.navigate("create_post")
+                },
+                contentDescription = "add_post",
+                tint = Color.Black,
+            )
             CustomDropDownMenu(homeViewModel, navController = navController)
         }
     )

@@ -3,7 +3,6 @@ package com.example.greetingcard.presentation.ui.home.planning
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,12 +33,13 @@ import androidx.compose.ui.unit.sp
 // 플래닝 화면
 @Composable
 fun PlanningScreen(listState: LazyListState) {
+    println("플래닝탭 listState: $listState")
     LazyColumn(
         state = listState,
     ) {
-        println("플래닝탭 listState: ${listState.toString()}")
         item {
             SearchBar()
+            Spacer(modifier = Modifier.height(400.dp))
         }
         item {
             FeaturesGrid()

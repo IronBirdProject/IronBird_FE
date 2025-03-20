@@ -1,5 +1,6 @@
 package com.example.greetingcard.presentation.ui.home.posting
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -114,14 +115,11 @@ fun PostItem(
     Column {
         // 유저 프로필 섹션
         ProfileSection(
-            post.userId.toString(),
-            post.userProfileImgUrl,
-            onClickUserProfile,
-            elapsedTime
+            post.userName.toString(), post.userProfileImgUrl, onClickUserProfile, elapsedTime
         )
 
         // 이미지 섹션
-//        PostImgSection(post.postImgUrlList, onClickPostImg = { Log.d("PostItem", "게시물 이미지 클릭") })
+        PostImgSection(post.safeUploadImage, onClickPostImg = { Log.d("PostItem", "게시물 이미지 클릭") })
         Spacer(modifier = Modifier.height(4.dp))
 
         // 좋아요, 댓글 섹션
@@ -141,7 +139,7 @@ fun PostItem(
                     contentDescription = "좋아요 아이콘"
                 )
                 Spacer(modifier = Modifier.width(2.dp))
-                Text(text = "120", style = MaterialTheme.typography.bodyLarge)
+                Text(text = post.likeCount.toString(), style = MaterialTheme.typography.bodyLarge)
             }
             if (showBottomSheet) {
                 CommentListBottomSheet(commentList, onDismissRequest = { showBottomSheet = false })
@@ -167,14 +165,13 @@ fun PostItem(
                 .padding(horizontal = 12.dp)
         ) {
             Text(
-                text = post.userId.toString(),
+                text = post.userName.toString() + "번 게스트",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
             )
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
                     text = post.detail,
@@ -182,12 +179,10 @@ fun PostItem(
                     maxLines = if (isExpanded) Int.MAX_VALUE else 2,
                     overflow = TextOverflow.Ellipsis, // 넘칠 경우 "..." 처리
                 )
-                Text(
-                    text = if (isExpanded) "접기" else "더보기",
+                Text(text = if (isExpanded) "접기" else "더보기",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
-                    modifier = Modifier.clickable { isExpanded = !isExpanded }
-                )
+                    modifier = Modifier.clickable { isExpanded = !isExpanded })
             }
         }
         Spacer(modifier = Modifier.height(12.dp))
@@ -203,13 +198,11 @@ fun ProfileSection(
     onClickUserProfile: () -> Unit,
     postUploadDate: String,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 8.dp)
-            .clickable { onClickUserProfile() }
-    ) {
+            .clickable { onClickUserProfile() }) {
         AsyncImage(
             model = userProfileImgUrl,
             error = painterResource(R.drawable.user_profile),
@@ -252,8 +245,7 @@ fun PostImgSection(postImgUrl: List<String?>?, onClickPostImg: () -> Unit) {
     val pagerState = rememberPagerState(pageCount = { postImgUrl?.size ?: 0 })
 
     HorizontalPager(
-        state = pagerState,
-        modifier = Modifier.fillMaxSize()
+        state = pagerState, modifier = Modifier.fillMaxSize()
     ) { page ->
         if (errorStates[page]) {
             // 에러가 발생한 경우
@@ -266,8 +258,7 @@ fun PostImgSection(postImgUrl: List<String?>?, onClickPostImg: () -> Unit) {
                     .clickable { onClickPostImg() },
             ) {
                 Image(
-                    modifier = Modifier
-                        .size(40.dp),
+                    modifier = Modifier.size(40.dp),
                     painter = painterResource(R.drawable.refresh_icon),
                     contentDescription = "로딩 실패 아이콘",
                 )
@@ -295,8 +286,7 @@ fun PostImgSection(postImgUrl: List<String?>?, onClickPostImg: () -> Unit) {
         horizontalArrangement = Arrangement.Center
     ) {
         repeat(pagerState.pageCount) { iteration ->
-            val color =
-                if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+            val color = if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
             Box(
                 modifier = Modifier
                     .padding(3.dp)
@@ -308,9 +298,9 @@ fun PostImgSection(postImgUrl: List<String?>?, onClickPostImg: () -> Unit) {
     }
 }
 
-
+// TODO: 댓글리스트 커스텀으로 스크롤 개선
 // 댓글 리스트 바텀시트
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommentListBottomSheet(
     commentList: List<Comment>,
@@ -368,6 +358,7 @@ fun CommentListBottomSheet(
     )
 }
 
+
 // 댓글 바텀시트 드래그 핸들
 @Composable
 fun CommentBottomSheetDragHandle() {
@@ -400,3 +391,4 @@ fun CommentBottomSheetDragHandle() {
         )
     }
 }
+

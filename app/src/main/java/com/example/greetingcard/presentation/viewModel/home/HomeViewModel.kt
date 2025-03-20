@@ -9,14 +9,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.greetingcard.data.data_source.post.PostDataSource
 import com.example.greetingcard.data.model.response.Comment
 import com.example.greetingcard.data.model.response.Post
+import com.example.greetingcard.data.repository.post.PostRepository
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
     // 임시로 HomeViewModel 내부에 postDataSource 생성 추후 수정
-    private val postDataSource: PostDataSource = PostDataSource()
+    private val postDataSource: PostRepository = PostRepository()
 
     // 전체 게시글 리스트
     private val _allPostList: MutableLiveData<List<Post>> by lazy { MutableLiveData<List<Post>>() }
@@ -58,9 +58,7 @@ class HomeViewModel : ViewModel() {
 
     init {
         getPostList()
-        _allPostList.observeForever {
-            println("allPostList: $it")
-        }
+        Log.d("viewModel init", "뷰모델 init 실행 ==========================")
     }
 
     // 탭 변경 메서드
