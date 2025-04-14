@@ -13,9 +13,10 @@ import com.example.greetingcard.presentation.view.login.component.LoginFinder
 import com.example.greetingcard.presentation.view.login.component.LoginJoin
 import com.example.greetingcard.presentation.view.my_info.MyPlanScreen
 import com.example.greetingcard.presentation.view.plan.createplan.CalendarScreen
-import com.example.greetingcard.presentation.view.plan.detailplan.DetailPlanScreen
+import com.example.greetingcard.presentation.view.plan.plandetail.PlanDetailScreen
 import com.example.greetingcard.presentation.viewModel.home.HomeViewModel
 import com.example.greetingcard.presentation.viewModel.home.PostViewModel
+import com.example.greetingcard.presentation.viewModel.plandetail.PlanDetailViewModel
 
 @Composable
 fun SetUpNavGraph(
@@ -62,8 +63,9 @@ fun SetUpNavGraph(
             Screen.DetailPlan.route,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { backStackEntry ->
+            val planDetailViewModel: PlanDetailViewModel = viewModel()
             val planId: Int? = backStackEntry.arguments?.getInt("id")
-            DetailPlanScreen(planId = planId)
+            PlanDetailScreen(planId = planId, planDetailViewModel = planDetailViewModel)
         }
     }
 }
