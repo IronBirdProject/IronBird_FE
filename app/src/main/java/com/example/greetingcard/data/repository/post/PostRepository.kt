@@ -7,10 +7,10 @@ import retrofit2.Response
 
 class PostRepository {
     // postService 구현체
-    private val postService: PostAPi = RetrofitInstance.create(PostAPi::class.java)
+    private val postApi: PostAPi = RetrofitInstance.create(PostAPi::class.java)
 
     // 게시글 조회
     suspend fun getPostList(): Response<List<Post>> {
-        return postService.getPostList()
+        return postApi.getPostList()
     }
 }

@@ -27,8 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,27 +43,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.greetingcard.R
-import com.example.greetingcard.data.model.response.MyPlan
+import com.example.greetingcard.data.model.response.PlanPreview
+import com.example.greetingcard.presentation.viewModel.plan.PlanPreviewViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyPlanScreen(navController: NavController) {
-    val planList = listOf(
-        MyPlan(1, 10, "부산여행 with 친구", "2025-01-20", "2025-01-23", null),
-        MyPlan(2, 20, "나홀로 일본", "2025-01-20", "2025-01-23", null),
-        MyPlan(3, 30, "프랑스 여행", "2025-01-20", "2025-01-23", null),
-        MyPlan(4, 40, "경주 파티", "2025-01-20", "2025-01-23", null),
-        MyPlan(5, 50, "경주 파티", "2025-01-20", "2025-01-23", null),
-        MyPlan(6, 60, "경주 파티", "2025-01-20", "2025-01-23", null),
-        MyPlan(7, 70, "경주 파티", "2025-01-20", "2025-01-23", null),
-    )
+fun MyPlanScreen(navController: NavController, viewModel: PlanPreviewViewModel) {
+    val planList by viewModel.planPreviews.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadPlanPreviews(userId = 1) // 로그인 유저 ID
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
-                ),
                 title = { Text("내 플랜", fontSize = 22.sp, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -76,21 +74,28 @@ fun MyPlanScreen(navController: NavController) {
             )
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 10.dp)
-        ) {
-            items(planList, key = { it.planId }) { plan ->
-                PlanCard(plan = plan, onClick = {
-                    // 상세 화면으로 이동 로직
-//                     navController.navigate("detail/${plan.id}")
-                    navController.navigate("detail_plan/${plan.planId}")
-                })
+        when {
+            isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("로딩 중...")
+            }
+
+            error != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("오류: $error")
+            }
+
+            else -> LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(vertical = 10.dp)
+            ) {
+                items(planList, key = { it.id }) { preview ->
+                    PlanCard(plan = preview, onClick = {
+                        navController.navigate("detail_plan/${preview.id}")
+                    })
+                }
             }
         }
     }
@@ -99,7 +104,7 @@ fun MyPlanScreen(navController: NavController) {
 
 @Composable
 // 복잡한 데이터 아니라 그냥 plan 넘김
-fun PlanCard(plan: MyPlan, onClick: () -> Unit) {
+fun PlanCard(plan: PlanPreview, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -145,7 +150,7 @@ fun PlanCard(plan: MyPlan, onClick: () -> Unit) {
                 ) {
                     Text(
                         modifier = Modifier.padding(bottom = 5.dp),
-                        text = "${plan.startDate} ~ ${plan.endDate}",
+                        text = "${plan.startedDate} ~ ${plan.endDate}",
                         style = MaterialTheme.typography.bodySmall.copy(color = Color.White)
                     )
                     IconButton(onClick = { /* 공유 로직 */ }) {

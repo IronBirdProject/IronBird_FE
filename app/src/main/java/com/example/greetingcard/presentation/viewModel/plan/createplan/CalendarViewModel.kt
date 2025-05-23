@@ -1,4 +1,4 @@
-package com.example.greetingcard.presentation.viewModel.createplan
+package com.example.greetingcard.presentation.viewModel.plan.createplan
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

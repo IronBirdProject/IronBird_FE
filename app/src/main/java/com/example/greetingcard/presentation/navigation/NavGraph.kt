@@ -17,7 +17,8 @@ import com.example.greetingcard.presentation.view.plan.createplan.CalendarScreen
 import com.example.greetingcard.presentation.view.plan.plandetail.PlanDetailScreen
 import com.example.greetingcard.presentation.viewModel.home.HomeViewModel
 import com.example.greetingcard.presentation.viewModel.home.PostViewModel
-import com.example.greetingcard.presentation.viewModel.plandetail.PlanDetailViewModel
+import com.example.greetingcard.presentation.viewModel.plan.PlanPreviewViewModel
+import com.example.greetingcard.presentation.viewModel.plan.plandetail.PlanDetailViewModel
 
 @Composable
 fun SetUpNavGraph(
@@ -57,7 +58,8 @@ fun SetUpNavGraph(
         }
         // 내 플랜 화면
         composable(Screen.MyPlan.route) {
-            MyPlanScreen(navController = navController)
+            val planPreviewViewModel: PlanPreviewViewModel = viewModel()
+            MyPlanScreen(navController = navController, viewModel = planPreviewViewModel)
         }
         // 플랜 상세 화면
         composable(

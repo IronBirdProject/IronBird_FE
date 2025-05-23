@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.greetingcard.presentation.view.home.planning.CustomBottomBar
-import com.example.greetingcard.presentation.viewModel.createplan.CalendarViewModel
+import com.example.greetingcard.presentation.viewModel.plan.createplan.CalendarViewModel
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit

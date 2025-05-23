@@ -58,7 +58,7 @@ import coil3.compose.AsyncImage
 import com.example.greetingcard.data.model.response.Plan
 import com.example.greetingcard.data.model.response.Schedule
 import com.example.greetingcard.presentation.ui.common.CustomLoadingIndicator
-import com.example.greetingcard.presentation.viewModel.plandetail.PlanDetailViewModel
+import com.example.greetingcard.presentation.viewModel.plan.plandetail.PlanDetailViewModel
 
 @Composable
 fun PlanDetailScreen(planId: Int?, planDetailViewModel: PlanDetailViewModel) {

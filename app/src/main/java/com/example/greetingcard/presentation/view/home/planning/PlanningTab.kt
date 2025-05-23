@@ -119,7 +119,9 @@ fun PlanningScreen(navController: NavController, listState: LazyListState) {
                     )
                 },
                 onPlanClicked = { navController.navigate("my_plan") },
-                onPostingClicked = { Log.d("Posting Click", "============ Click ============") })
+                onPostingClicked = {
+                    Log.d("Posting Click", "============ Click ============")
+                })
         }
         item {
             FeaturesGrid()
