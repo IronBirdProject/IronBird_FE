@@ -1,6 +1,7 @@
 package com.example.greetingcard.presentation.view.home.planning
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,20 +15,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 
 // 광고 배너 (임시)
 @Composable
-fun AdvertisementSection() {
+fun AdvertisementSection(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 25.dp)
             .height(200.dp)
             .background(Color(0xFFF0975B), shape = RoundedCornerShape(20.dp))
+            .clickable { navController.navigate("map_test") }
     ) {
         Text(
-            text = "300만원 받고 떠나는 휴양 알바\n트리플 X 당근알바",
+            text = "지도 테스트",
             modifier = Modifier.align(Alignment.Center),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold

@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.greetingcard.presentation.navigation.Screen
 import com.example.greetingcard.presentation.view.home.HomePage
+import com.example.greetingcard.presentation.view.home.planning.MapTestScreen
 import com.example.greetingcard.presentation.view.home.posting.CreatePostPage
 import com.example.greetingcard.presentation.view.login.component.Login
 import com.example.greetingcard.presentation.view.login.component.LoginFinder
@@ -67,5 +68,9 @@ fun SetUpNavGraph(
             val planId: Int? = backStackEntry.arguments?.getInt("id")
             PlanDetailScreen(planId = planId, planDetailViewModel = planDetailViewModel)
         }
+
+        composable(
+            Screen.MapTest.route
+        ) { MapTestScreen() }
     }
 }

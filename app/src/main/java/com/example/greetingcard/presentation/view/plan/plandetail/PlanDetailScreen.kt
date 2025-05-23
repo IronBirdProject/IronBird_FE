@@ -18,8 +18,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChecklistRtl
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,9 +29,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +50,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -90,15 +95,22 @@ fun PlanDetailScreen(planId: Int?, planDetailViewModel: PlanDetailViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlanDetailContent(plan: Plan) {
-    val sheetState = rememberModalBottomSheetState()
+    val scheduleSheetState = rememberModalBottomSheetState()
+    val addLocationSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     val scope = rememberCoroutineScope()
 
     // 선택한 스케쥴
     var selectedSchedule by remember { mutableStateOf<Schedule?>(null) }
 
+    // 장소 추가 다이얼로그 상태
+    var isAddLocationModalOpen by remember { mutableStateOf(false) }
+    var newLocationText by remember { mutableStateOf("") }
+
     selectedSchedule?.let { schedule ->
         ModalBottomSheet(
-            sheetState = sheetState,
+            sheetState = scheduleSheetState,
             onDismissRequest = { selectedSchedule = null },
             containerColor = Color.White
         ) {
@@ -169,8 +181,8 @@ fun PlanDetailContent(plan: Plan) {
                         )
                         .background(
                             color =
-                            if (index == (selectedDay.value - 1)) Color(0xff057bf6)
-                            else Color.Transparent
+                                if (index == (selectedDay.value - 1)) Color(0xff057bf6)
+                                else Color.Transparent
                         ),
                     selectedContentColor = Color.White,
                     unselectedContentColor = Color.Gray,
@@ -201,9 +213,28 @@ fun PlanDetailContent(plan: Plan) {
 //                        contentPadding = PaddingValues(0.dp),
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
-                        onClick = { println("버튼클릭") }
+                        onClick = { isAddLocationModalOpen = true }
                     ) {
                         Text("장소 추가", color = Color.Black)
+                    }
+
+                    if (isAddLocationModalOpen) {
+                        ModalBottomSheet(
+                            sheetState = addLocationSheetState,
+                            onDismissRequest = { isAddLocationModalOpen = false },
+                            containerColor = Color.White,
+                        ) {
+                            AddLocationBottomSheet(
+                                onSave = { title, desc, amount, memo ->
+                                    // 저장 로직 처리
+                                    println("장소 저장: $title, $desc, $amount, $memo")
+                                    isAddLocationModalOpen = false
+                                },
+                                onCancel = {
+                                    isAddLocationModalOpen = false
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -314,5 +345,87 @@ fun ScheduleDetailBottomSheet(schedule: Schedule?, onSaveMemo: (String) -> Unit)
 //        Button(onClick = { onSaveMemo(memo) }, modifier = Modifier.align(Alignment.End)) {
 //            Text("저장")
 //        }
+    }
+}
+
+// 장소추가 바텀모달 컴포저블
+@Composable
+fun AddLocationBottomSheet(
+    onSave: (title: String, description: String, amount: String, memo: String) -> Unit,
+    onCancel: () -> Unit
+) {
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var amount by remember { mutableStateOf("") }
+    var memo by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp)
+    ) {
+        Text(
+            text = "장소 추가",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("제목") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("설명") },
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 3
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = amount,
+            onValueChange = { amount = it },
+            label = { Text("필요 금액") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = memo,
+            onValueChange = { memo = it },
+            label = { Text("메모") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            maxLines = 5
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            TextButton(onClick = onCancel) {
+                Text("취소")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(
+                onClick = {
+                    onSave(title, description, amount, memo)
+                }
+            ) {
+                Text("저장")
+            }
+        }
     }
 }
