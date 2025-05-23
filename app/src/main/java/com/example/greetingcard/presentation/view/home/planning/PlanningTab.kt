@@ -126,7 +126,7 @@ fun PlanningScreen(navController: NavController, listState: LazyListState) {
         }
         item {
             Spacer(modifier = Modifier.height(12.dp))
-            AdvertisementSection()
+            AdvertisementSection(navController = navController)
             Spacer(modifier = Modifier.height(60.dp))
         }
     }
