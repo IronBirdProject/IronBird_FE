@@ -3,7 +3,9 @@ package com.example.greetingcard
 import android.app.Application
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.vectormap.KakaoMapSdk
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class GlobalApplication : Application() {
     override fun onCreate() {
         super.onCreate()

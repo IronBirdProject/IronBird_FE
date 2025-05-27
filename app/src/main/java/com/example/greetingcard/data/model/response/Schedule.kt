@@ -7,4 +7,5 @@ data class Schedule(
     val description: String,    // 일정 이름
     val cost: Int? = null,             // 비용
     val memo: String?,          // 간단한 메모
+    val planId: Int,           // 일정이 속한 플랜 ID
 )

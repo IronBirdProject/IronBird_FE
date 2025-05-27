@@ -12,11 +12,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.greetingcard.data.model.response.Comment
 import com.example.greetingcard.data.model.response.Post
 import com.example.greetingcard.data.repository.post.PostRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val postRepository: PostRepository
+) : ViewModel() {
     // 임시로 HomeViewModel 내부에 postDataSource 생성 추후 수정
-    private val postDataSource: PostRepository = PostRepository()
+//    private val postDataSource: PostRepository = PostRepository()
 
     // 전체 게시글 리스트
     private val _allPostList: MutableLiveData<List<Post>> by lazy { MutableLiveData<List<Post>>() }
@@ -93,7 +98,7 @@ class HomeViewModel : ViewModel() {
     private fun getPostList() {
         viewModelScope.launch {
             try {
-                val response = postDataSource.getPostList()
+                val response = postRepository.getPostList()
                 println("response: $response")
                 if (response.isSuccessful) {
                     Log.d("게시글 조회", response.body().toString())

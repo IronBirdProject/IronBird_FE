@@ -4,6 +4,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    // kapt 사용
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -105,5 +108,9 @@ dependencies {
     // 이미지처치 라이브러리
     implementation("io.coil-kt:coil-compose:2.4.0")
 
+    implementation("com.google.dagger:hilt-android:2.56.2")
+    kapt("com.google.dagger:hilt-android-compiler:2.56.2")
+
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
 }

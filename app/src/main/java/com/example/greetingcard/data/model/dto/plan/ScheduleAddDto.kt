@@ -6,4 +6,5 @@ data class ScheduleAddDto(
     val time: String,
     val cost: Int?,
     val memo: String?,
+    val planId: Int
 )

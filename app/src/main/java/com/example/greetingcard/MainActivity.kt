@@ -9,7 +9,9 @@ import androidx.activity.viewModels
 import androidx.navigation.compose.rememberNavController
 import com.example.greetingcard.presentation.ui.theme.GreetingCardTheme
 import com.example.greetingcard.presentation.viewModel.login.kakao.KakaoViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val kakaoAuthViewModel: KakaoViewModel by viewModels()

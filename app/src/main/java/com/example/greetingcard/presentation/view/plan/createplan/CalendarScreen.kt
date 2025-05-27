@@ -26,10 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.greetingcard.presentation.view.home.planning.CustomBottomBar
-import com.example.greetingcard.presentation.viewModel.plan.createplan.CalendarViewModel
+import com.example.greetingcard.presentation.viewModel.plan.createplan.PlanCreateViewModel
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
@@ -38,9 +37,10 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun CalendarScreen(
     navController: NavController,
-    viewModel: CalendarViewModel = viewModel(),
+    rootNavController: NavController,
+    planCreateViewModel: PlanCreateViewModel,
 ) {
-    val selectedDates by viewModel.selectedDates.collectAsState()
+    val selectedDates by planCreateViewModel.selectedDates.collectAsState()
     val currentMonth = remember { LocalDate.now().withDayOfMonth(1) }
     val travelDurationText = if (selectedDates.startDate != null && selectedDates.endDate != null) {
         val days = ChronoUnit.DAYS.between(selectedDates.startDate, selectedDates.endDate)
@@ -65,7 +65,10 @@ fun CalendarScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        rootNavController.popBackStack()
+                        Log.d("CalendarScreen", "뒤로가기 버튼 클릭")
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Close, contentDescription = "뒤로가기"
                         )
@@ -89,7 +92,7 @@ fun CalendarScreen(
                         MonthView(
                             yearMonth = month,
                             today = LocalDate.now(),
-                            onDateSelected = { date -> viewModel.selectDate(date) },
+                            onDateSelected = { date -> planCreateViewModel.selectDate(date) },
                             selectedDates = selectedDates
                         )
                         Spacer(modifier = Modifier.height(20.dp)) // 각 달 간의 간격

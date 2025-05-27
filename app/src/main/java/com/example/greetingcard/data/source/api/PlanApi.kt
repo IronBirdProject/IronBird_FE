@@ -1,7 +1,10 @@
 package com.example.greetingcard.data.source.api
 
+import com.example.greetingcard.data.model.dto.plan.PlanCreateDto
+import com.example.greetingcard.data.model.dto.plan.ScheduleAddDto
 import com.example.greetingcard.data.model.response.Plan
 import com.example.greetingcard.data.model.response.PlanPreview
+import com.example.greetingcard.data.model.response.Schedule
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -20,17 +23,26 @@ interface PlanApi {
     @GET("api/plan/user/{userId}")
     suspend fun getUserPlanList(@Path("userId") userId: Int): Response<List<PlanPreview>>
 
-    // 플랜 상세 조회는 현재 컨트롤러에 없음 → 대신 PlanList를 받아 filter하거나, 서버에 단일 조회 API 추가 필요
+    // 특정 플랜 조회
+    @GET("api/plan/{planId}")
+    suspend fun getPlan(@Path("planId") planId: Int): Response<Plan>
 
     // 플랜 생성
     @POST("api/plan/create")
-    suspend fun createPlan(@Body plan: Plan): Response<Plan>
+    suspend fun createPlan(@Body plan: PlanCreateDto): Response<Plan>
 
     // 플랜 수정
     @PUT("api/plan/update/{planId}")
-    suspend fun updatePlan(@Path("planId") planId: Long, @Body plan: Plan): Response<Plan>
+    suspend fun updatePlan(@Path("planId") planId: Int, @Body plan: Plan): Response<Plan>
 
     // 플랜 삭제
     @DELETE("api/plan/{planId}")
-    suspend fun deletePlan(@Path("planId") planId: Long): Response<String>
+    suspend fun deletePlan(@Path("planId") planId: Int): Response<String>
+
+    // 스케쥴 생성
+    @POST("api/plan/{planId}/schedules")
+    suspend fun createSchedule(
+        @Path("planId") planId: Int,
+        @Body schedule: ScheduleAddDto
+    ): Response<Schedule>
 }

@@ -23,14 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.greetingcard.presentation.view.home.planning.PlanningScreen
 import com.example.greetingcard.presentation.view.home.posting.PostingTab
 import com.example.greetingcard.presentation.viewModel.home.HomeViewModel
 
 @Composable
-fun HomePage(navController: NavHostController, homeViewModel: HomeViewModel = viewModel()) {
+fun HomePage(navController: NavHostController, homeViewModel: HomeViewModel) {
     // 탭 별로 liststate 선언
     val listStates = List(homeViewModel.tabs.size) { rememberLazyListState() }
 
@@ -47,8 +46,7 @@ fun HomePage(navController: NavHostController, homeViewModel: HomeViewModel = vi
             // TODO: 추후 포스팅 탭에서 가장 가까운 여행 일정 페이지로 이동하는 플로팅 버튼 생성 예정
             if (homeViewModel.selectedTabIndex == 0) {
                 CreatePlanFloatingButton {
-                    navController.navigate("plan_calendar")
-//                    navController.navigate("plan_destination")
+                    navController.navigate("plan_create") // 플랜 생성 페이지로 이동
                 }
             }
         },

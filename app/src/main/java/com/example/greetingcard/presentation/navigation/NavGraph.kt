@@ -1,10 +1,11 @@
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.greetingcard.presentation.navigation.PlanCreateNavGraph
 import com.example.greetingcard.presentation.navigation.Screen
 import com.example.greetingcard.presentation.view.home.HomePage
 import com.example.greetingcard.presentation.view.home.planning.MapTestScreen
@@ -13,7 +14,6 @@ import com.example.greetingcard.presentation.view.login.component.Login
 import com.example.greetingcard.presentation.view.login.component.LoginFinder
 import com.example.greetingcard.presentation.view.login.component.LoginJoin
 import com.example.greetingcard.presentation.view.my_info.MyPlanScreen
-import com.example.greetingcard.presentation.view.plan.createplan.CalendarScreen
 import com.example.greetingcard.presentation.view.plan.plandetail.PlanDetailScreen
 import com.example.greetingcard.presentation.viewModel.home.HomeViewModel
 import com.example.greetingcard.presentation.viewModel.home.PostViewModel
@@ -39,18 +39,27 @@ fun SetUpNavGraph(
             LoginJoin(navController = navController)
         }
         composable(Screen.Home.route) {
-            val homeViewModel: HomeViewModel = viewModel()
+            val homeViewModel: HomeViewModel = hiltViewModel()
             HomePage(navController = navController, homeViewModel = homeViewModel)
         }
-        composable(Screen.Calender.route) {
-            CalendarScreen(navController = navController)
+//        composable(Screen.Calender.route) {
+//            val planCreateViewModel: PlanCreateViewModel = viewModel()
+//            CalendarScreen(navController = navController, planCreateViewModel = planCreateViewModel)
+//        }
+//        composable(Screen.SelectDestination.route) {
+//            val planCreateViewModel: PlanCreateViewModel = viewModel()
+//            TravelDestinationScreen(
+//                navController = navController,
+//                planViewModel = planCreateViewModel
+//            )
+//        }
+        composable(Screen.PlanCreate.route) {
+            PlanCreateNavGraph(rootNavController = navController)
         }
-        composable(Screen.SelectDestination.route) {
-            val postViewModel: PostViewModel = viewModel()
-            TravelDestinationScreen(navController = navController, postViewModel = postViewModel)
-        }
+
+
         composable(Screen.CreatePost.route) {
-            val postViewModel: PostViewModel = viewModel()
+            val postViewModel: PostViewModel = hiltViewModel()
             CreatePostPage(
                 navController = navController,
                 postViewModel = postViewModel,
@@ -58,7 +67,7 @@ fun SetUpNavGraph(
         }
         // 내 플랜 화면
         composable(Screen.MyPlan.route) {
-            val planPreviewViewModel: PlanPreviewViewModel = viewModel()
+            val planPreviewViewModel: PlanPreviewViewModel = hiltViewModel()
             MyPlanScreen(navController = navController, viewModel = planPreviewViewModel)
         }
         // 플랜 상세 화면
@@ -66,7 +75,7 @@ fun SetUpNavGraph(
             Screen.DetailPlan.route,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { backStackEntry ->
-            val planDetailViewModel: PlanDetailViewModel = viewModel()
+            val planDetailViewModel: PlanDetailViewModel = hiltViewModel()
             val planId: Int? = backStackEntry.arguments?.getInt("id")
             PlanDetailScreen(planId = planId, planDetailViewModel = planDetailViewModel)
         }

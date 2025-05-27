@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.greetingcard.data.model.response.PlanPreview
 import com.example.greetingcard.data.repository.plan.PlanRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -13,10 +15,13 @@ import kotlinx.coroutines.launch
  * 플랜 목록(요약 정보) 화면 전용 ViewModel
  * - 서버로부터 특정 유저의 PlanPreview 리스트를 불러옵니다.
  */
-class PlanPreviewViewModel : ViewModel() {
+@HiltViewModel
+class PlanPreviewViewModel @Inject constructor(
+    private val repository: PlanRepository
+) : ViewModel() {
 
     // 플랜 목록을 불러오기 위한 Repository
-    private val repository: PlanRepository = PlanRepository()
+//    private val repository: PlanRepository = PlanRepository()
 
     // 플랜 요약 리스트 상태 저장
     private val _planPreviews = MutableStateFlow<List<PlanPreview>>(emptyList())

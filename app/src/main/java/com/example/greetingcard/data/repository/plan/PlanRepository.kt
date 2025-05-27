@@ -1,32 +1,52 @@
 package com.example.greetingcard.data.repository.plan
 
+import com.example.greetingcard.data.model.dto.plan.PlanCreateDto
+import com.example.greetingcard.data.model.dto.plan.ScheduleAddDto
 import com.example.greetingcard.data.model.response.Plan
 import com.example.greetingcard.data.model.response.PlanPreview
+import com.example.greetingcard.data.model.response.Schedule
 import com.example.greetingcard.data.source.api.PlanApi
-import com.example.greetingcard.data.source.api.RetrofitInstance
+import jakarta.inject.Inject
 import retrofit2.Response
 
-class PlanRepository {
+
+class PlanRepository @Inject constructor(
+    private val planApi: PlanApi
+) {
     // planApi 구현체
-    private val planApi: PlanApi = RetrofitInstance.create(PlanApi::class.java)
+//    private val planApi: PlanApi = RetrofitInstance.create(PlanApi::class.java)
 
-    suspend fun getAllPlans(): Response<List<Plan>> {
-        return planApi.getAllPlans()
-    }
+//    suspend fun getAllPlans(): Response<List<Plan>> {
+//        return planApi.getAllPlans()
+//    }
 
+    // 특정 유저의 플랜 목록 조회
     suspend fun getPlansByUserId(userId: Int): Response<List<PlanPreview>> {
         return planApi.getUserPlanList(userId)
     }
 
-    suspend fun createPlan(plan: Plan): Response<Plan> {
+    // 특정 플랜 조회
+    suspend fun getPlan(planId: Int): Response<Plan> {
+        return planApi.getPlan(planId)
+    }
+
+    // 플랜 생성
+    suspend fun createPlan(plan: PlanCreateDto): Response<Plan> {
         return planApi.createPlan(plan)
     }
 
-    suspend fun updatePlan(planId: Long, plan: Plan): Response<Plan> {
+    // 플랜 수정
+    suspend fun updatePlan(planId: Int, plan: Plan): Response<Plan> {
         return planApi.updatePlan(planId, plan)
     }
 
-    suspend fun deletePlan(planId: Long): Response<String> {
+    // 플랜 삭제
+    suspend fun deletePlan(planId: Int): Response<String> {
         return planApi.deletePlan(planId)
+    }
+
+    // 스케쥴 생성
+    suspend fun createSchedule(planId: Int, schedule: ScheduleAddDto): Response<Schedule> {
+        return planApi.createSchedule(planId, schedule)
     }
 }

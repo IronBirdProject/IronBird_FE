@@ -49,125 +49,116 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.greetingcard.R
 import com.example.greetingcard.presentation.view.home.planning.CustomBottomBar
-import com.example.greetingcard.presentation.viewModel.home.PostViewModel
+import com.example.greetingcard.presentation.viewModel.home.DestinationItem
+import com.example.greetingcard.presentation.viewModel.plan.createplan.PlanCreateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TravelDestinationScreen(
     navController: NavController,
-    postViewModel: PostViewModel,
+    planCreateViewModel: PlanCreateViewModel,
 ) {
-    val searchQuery by postViewModel.searchQuery.collectAsState()
-    val searchResults by postViewModel.searchResults.collectAsState()
-    val recommendedDestinations = postViewModel.recommendedDestinations
-    val recentQueries by postViewModel.recentQueries.collectAsState()
+    val searchQuery by planCreateViewModel.searchQuery.collectAsState()
+    val searchResults by planCreateViewModel.searchResults.collectAsState()
+    val recommendedDestinations = planCreateViewModel.recommendedDestinations
+    val recentQueries by planCreateViewModel.recentQueries.collectAsState()
 
-    val selectedDestination by postViewModel.selectedDestination.collectAsState()
+    val selectedDestination by planCreateViewModel.selectedDestination.collectAsState()
 
-    Scaffold(
-        containerColor = Color.White,
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
-                title = {
-                    Text(
-                        text = "여행지",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "뒤로가기")
-                    }
-                },
-            )
-        },
-        content = { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
-            ) {
-                // 검색 바
-                SearchBar(
-                    query = searchQuery,
-                    onQueryChanged = { postViewModel.onSearchQueryChanged(it) },
-                    onClearQuery = { postViewModel.onClearQuery() }
+    Scaffold(containerColor = Color.White, topBar = {
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
+            title = {
+                Text(
+                    text = "여행지",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 최근 검색어 UI
-                if (searchQuery.isEmpty()) {
-                    RecentSearches(
-                        recentQueries = recentQueries,
-                        onQueryClick = { postViewModel.onSearchQueryChanged(it) },
-                        onDeleteClick = { postViewModel.deleteRecentQuery(it) },
-                        onClearAll = { postViewModel.clearRecentQueries() }
-                    )
+            },
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(imageVector = Icons.Default.Close, contentDescription = "뒤로가기")
                 }
+            },
+        )
+    }, content = { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
+        ) {
+            // 검색 바
+            SearchBar(
+                query = searchQuery,
+                onQueryChanged = { planCreateViewModel.onSearchQueryChanged(it) },
+                onClearQuery = { planCreateViewModel.onClearQuery() })
 
-                if (searchQuery.isNotEmpty()) {
-                    // 검색 결과
-                    if (searchResults.isNotEmpty()) {
-                        Text(
-                            text = "검색 결과",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        SearchResultsList(
-                            selectedDestination = selectedDestination,
-                            searchResults = searchResults,
-                            onDestinationClick = { postViewModel.selectDestination(it) }
-                        )
-                    } else {
-                        // 검색 결과 없음 메시지
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "검색 결과가 없습니다",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Gray
-                            )
-                        }
-                    }
-                } else {
-                    // 추천 여행지
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 최근 검색어 UI
+            if (searchQuery.isEmpty()) {
+                RecentSearches(
+                    recentQueries = recentQueries,
+                    onQueryClick = { planCreateViewModel.onSearchQueryChanged(it) },
+                    onDeleteClick = { planCreateViewModel.deleteRecentQuery(it) },
+                    onClearAll = { planCreateViewModel.clearRecentQueries() })
+            }
+
+            if (searchQuery.isNotEmpty()) {
+                // 검색 결과
+                if (searchResults.isNotEmpty()) {
                     Text(
-                        text = "추천 여행지",
+                        text = "검색 결과",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    RecommendedDestinations(
+                    SearchResultsList(
                         selectedDestination = selectedDestination,
-                        destinations = recommendedDestinations,
-                        onDestinationClick = { postViewModel.selectDestination(it) }
-                    )
+                        searchResults = searchResults,
+                        onDestinationClick = { planCreateViewModel.selectDestination(it) })
+                } else {
+                    // 검색 결과 없음 메시지
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "검색 결과가 없습니다",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Gray
+                        )
+                    }
                 }
+            } else {
+                // 추천 여행지
+                Text(
+                    text = "추천 여행지",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                RecommendedDestinations(
+                    selectedDestination = selectedDestination,
+                    destinations = recommendedDestinations,
+                    onDestinationClick = { planCreateViewModel.selectDestination(it) })
             }
-        },
-        bottomBar = {
-            CustomBottomBar(
-                label = "생성하기",
-                enabled = selectedDestination.isNotEmpty(),
-                onBottomBarClick = {
-                    // TODO: 플랜 생성 로직 및 화면 이동
-
-                },
-            )
         }
-    )
+    }, bottomBar = {
+        CustomBottomBar(
+            label = "여행지 선택 완료",
+            enabled = selectedDestination.isNotEmpty(),
+            onBottomBarClick = {
+                // TODO: 플랜 생성 로직 및 화면 이동
+                navController.navigate("plan_title")
+            },
+        )
+    })
 }
 
 // 검색바
@@ -215,8 +206,7 @@ fun SearchBar(
                             .size(20.dp)
                             .clickable {
                                 onClearQuery()
-                            }
-                    )
+                            })
                 }
             },
             colors = TextFieldDefaults.colors(
@@ -231,15 +221,11 @@ fun SearchBar(
 @Composable
 fun SearchResultsList(
     selectedDestination: String?,
-    searchResults: List<String>,
+    searchResults: List<DestinationItem>,
     onDestinationClick: (String) -> Unit
 ) {
-    LazyColumn(
-
-        modifier = Modifier.fillMaxSize(),
-//        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        items(searchResults, key = { it }) { destination ->
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(searchResults, key = { it.name }) { destination ->
             TravelDestinationItem(selectedDestination, destination, onDestinationClick)
         }
     }
@@ -249,58 +235,52 @@ fun SearchResultsList(
 @Composable
 fun RecommendedDestinations(
     selectedDestination: String?,
-    destinations: List<String>,
+    destinations: List<DestinationItem>,
     onDestinationClick: (String) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-//        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        items(destinations, key = { it }) { destination ->
-            TravelDestinationItem(selectedDestination, destination, onDestinationClick)
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(destinations, key = { it.name }) { destination ->
+            TravelDestinationItem(
+                selectedDestination = selectedDestination,
+                destination = destination,
+                onClick = onDestinationClick
+            )
         }
     }
 }
 
+
 @Composable
 fun TravelDestinationItem(
-    selectedDestination: String?,
-    destination: String,
-    onClick: (String) -> Unit
+    selectedDestination: String?, destination: DestinationItem, onClick: (String) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape = RoundedCornerShape(8.dp))
-            .clickable { onClick(destination) }
+            .clickable { onClick(destination.name) }
             .background(
-                if (selectedDestination == destination) Color(0xFFE3F2FD) else Color.Transparent
+                if (selectedDestination == destination.name) Color(0xFFE3F2FD) else Color.Transparent
             )
-            .padding(12.dp)
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.clip(CircleShape)
-        ) {
-            Image(
-                painter = painterResource(R.drawable.sea),
-                contentScale = ContentScale.FillBounds,
-                contentDescription = "여행지 이미지",
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(CircleShape)
-            )
-        }
+            .padding(12.dp)) {
+        Image(
+            painter = painterResource(destination.imageResId),
+            contentDescription = "여행지 이미지",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape)
+        )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
-            text = destination,
+            text = destination.name,
             fontSize = 14.sp,
-            fontWeight = if (selectedDestination == destination) FontWeight.Bold else FontWeight.Normal,
+            fontWeight = if (selectedDestination == destination.name) FontWeight.Bold else FontWeight.Normal,
             color = Color.Black,
             modifier = Modifier.weight(1f)
         )
-        if (selectedDestination == destination) {
+        if (selectedDestination == destination.name) {
             Icon(
                 imageVector = Icons.Default.Check,
                 contentDescription = "Selected",
@@ -321,19 +301,16 @@ fun RecentSearches(
 ) {
     if (recentQueries.isNotEmpty()) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "최근 검색어",
-                style = MaterialTheme.typography.titleMedium
+                text = "최근 검색어", style = MaterialTheme.typography.titleMedium
             )
             Text(
                 text = "전체 삭제",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray,
-                modifier = Modifier.clickable { onClearAll() }
-            )
+                modifier = Modifier.clickable { onClearAll() })
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -343,7 +320,9 @@ fun RecentSearches(
             items(recentQueries, key = { it }) { query ->
                 Box(
                     modifier = Modifier
-                        .background(Color(0xffe0e0e0), shape = RoundedCornerShape(50.dp))
+                        .background(
+                            Color(0xffe0e0e0), shape = RoundedCornerShape(50.dp)
+                        )
                         .wrapContentWidth()
                         .padding(horizontal = 8.dp, vertical = 2.dp)
                         .height(30.dp)
@@ -363,8 +342,7 @@ fun RecentSearches(
                                 .size(18.dp)
                                 .clickable {
                                     onDeleteClick(query)
-                                }
-                        )
+                                })
                     }
                 }
             }
