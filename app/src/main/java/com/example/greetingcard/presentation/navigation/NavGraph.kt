@@ -17,6 +17,7 @@ import com.example.greetingcard.presentation.view.my_info.MyPlanScreen
 import com.example.greetingcard.presentation.view.plan.plandetail.PlanDetailScreen
 import com.example.greetingcard.presentation.viewModel.home.HomeViewModel
 import com.example.greetingcard.presentation.viewModel.home.PostViewModel
+import com.example.greetingcard.presentation.viewModel.login.LoginViewModel
 import com.example.greetingcard.presentation.viewModel.plan.PlanPreviewViewModel
 import com.example.greetingcard.presentation.viewModel.plan.plandetail.PlanDetailViewModel
 
@@ -29,7 +30,8 @@ fun SetUpNavGraph(
         startDestination = Screen.Login.route
     ) {
         composable(Screen.Login.route) {
-            Login(navController = navController)
+            val loginViewModel: LoginViewModel = hiltViewModel()
+            Login(navController = navController, loginViewModel = loginViewModel)
         }
         composable(Screen.LoginFinder.route) { backStackEntry ->
             val viewType = backStackEntry.arguments?.getString("viewType") ?: "findId"

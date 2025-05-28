@@ -35,16 +35,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.greetingcard.presentation.viewModel.login.LoginViewModel
 
 @Composable
 fun Login(
     navController: NavController,
+    loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier
 ) {
-    val loginViewModel: LoginViewModel = viewModel()
+//    val loginViewModel: LoginViewModel = viewModel()
 
     loginViewModel.isLoading.value
     loginViewModel.loginResult.value
@@ -90,7 +90,8 @@ fun Login(
         LoginButtonContainer(
             navController = navController,
             userInput = userInput,
-            passwordInput = passwordInput
+            passwordInput = passwordInput,
+            loginViewModel = loginViewModel
         )
 
         LoginActionRow(navController)

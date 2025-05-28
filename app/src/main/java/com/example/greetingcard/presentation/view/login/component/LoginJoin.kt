@@ -190,7 +190,8 @@ fun JoinForm(
                     // UserDTO 객체 생성
                     Log.d("isUserIdVaild", isUserIdVaild.toString())
                     val userDTO = UserDTO.from(userId, userName, password, userEmail)
-                    loginViewModel.join(userDTO)
+                    /// TODO: join API 호출
+//                    loginViewModel.join(userDTO)
                 } else {
                     focusRequester.requestFocus()
                 }

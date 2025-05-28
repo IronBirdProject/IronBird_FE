@@ -22,7 +22,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,7 +82,6 @@ fun PlanDetailContent(plan: Plan, planDetailViewModel: PlanDetailViewModel) {
     val addLocationSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
-    val scope = rememberCoroutineScope()
 
     // 선택한 스케쥴
     var selectedSchedule by remember { mutableStateOf<Schedule?>(null) }
@@ -131,48 +129,6 @@ fun PlanDetailContent(plan: Plan, planDetailViewModel: PlanDetailViewModel) {
                 )
                 .height(250.dp),
         )
-//        }
-
-//        // Day 탭 (단순 예시)
-//        val dayList = plan.schedules.groupBy { it.day }.toSortedMap()
-//        val selectedDay = remember {
-//            mutableStateOf(dayList.keys.firstOrNull() ?: 1) // 👉 기본값 1일차 처리
-//        }
-
-//        ScrollableTabRow(
-//            containerColor = Color.White,
-//            selectedTabIndex = selectedDay.value - 1,
-//            edgePadding = 10.dp,
-//            indicator = {},
-//            divider = {}) {
-//            dayList.keys.forEachIndexed { index, day ->
-//                Tab(
-//                    // 선택된 탭 배경색 표시
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(horizontal = 3.dp)
-//                        .clip(CircleShape)
-//                        .border(
-//                            width = 0.5.dp,
-//                            color = if (index == selectedDay.value - 1) Color.Transparent else Color.LightGray,
-//                            shape = CircleShape
-//                        )
-//                        .background(
-//                            color = if (index == (selectedDay.value - 1)) Color(0xff057bf6)
-//                            else Color.Transparent
-//                        ),
-//                    selectedContentColor = Color.White,
-//                    unselectedContentColor = Color.Gray,
-//                    selected = selectedDay.value == day,
-//                    onClick = { selectedDay.value = day },
-//                    text = {
-//                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                            Text("DAY $day", fontWeight = FontWeight.Bold)
-//                            Text("1월 ${4 + index}일", fontSize = 12.sp) // 더미 날짜 로직
-//                        }
-//                    })
-//            }
-//        }
 
         var selectedDay by remember { mutableStateOf(1) }
 
@@ -262,55 +218,6 @@ fun PlanDetailContent(plan: Plan, planDetailViewModel: PlanDetailViewModel) {
                 )
             }
         }
-
-
-//        // 일정 리스트
-//        LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
-//            items(dayList[selectedDay.value]) { schedule ->
-//                ScheduleItem(
-//                    schedule = schedule, onScheduleClicked = {
-//                        selectedSchedule = schedule
-//                    })
-//            }
-//            item {
-//                Row(modifier = Modifier.padding(horizontal = 12.dp)) {
-//                    OutlinedButton(
-////                        contentPadding = PaddingValues(0.dp),
-//                        modifier = Modifier.fillMaxWidth(),
-//                        shape = RoundedCornerShape(10.dp),
-//                        onClick = { isAddLocationModalOpen = true }) {
-//                        Text("장소 추가", color = Color.Black)
-//                    }
-//
-//                    if (isAddLocationModalOpen) {
-//                        ModalBottomSheet(
-//                            sheetState = addLocationSheetState,
-//                            onDismissRequest = { isAddLocationModalOpen = false },
-//                            containerColor = Color.White,
-//                        ) {
-//                            AddScheduleBottomSheet(
-//                                selectedDay = selectedDay.value,
-//                                onSave = { title, desc, cost, memo, time ->
-//                                    planDetailViewModel.addSchedule(
-//                                        description = desc,
-//                                        time = time,
-//                                        day = selectedDay.value,
-//                                        cost = cost,
-//                                        memo = memo,
-//                                        planId = plan.id
-//                                    )
-//                                    println("장소 저장: ${selectedDay.value}, $title, $desc, $cost, $memo, $time")
-//                                    isAddLocationModalOpen = false
-//                                },
-//                                onCancel = {
-//                                    isAddLocationModalOpen = false
-//                                }
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 }
 

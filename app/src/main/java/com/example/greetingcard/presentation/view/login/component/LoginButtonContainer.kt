@@ -1,6 +1,7 @@
 package com.example.greetingcard.presentation.view.login.component
 
 import CustomAlertDialog
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,11 +17,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.greetingcard.data.model.dto.user.UserDTO
 import com.example.greetingcard.presentation.viewModel.login.LoginViewModel
 import com.example.greetingcard.presentation.viewModel.login.kakao.KakaoViewModel
 
@@ -29,11 +30,12 @@ import com.example.greetingcard.presentation.viewModel.login.kakao.KakaoViewMode
 fun LoginButtonContainer(
     navController: NavController,
     userInput: String,
-    passwordInput: String
+    passwordInput: String,
+    loginViewModel: LoginViewModel,
 
-) {
-    val loginViewModel: LoginViewModel = viewModel()
+    ) {
     val kakaoViewModel: KakaoViewModel = viewModel()
+    val context = LocalContext.current
 
 //    val loginButtonColor = ButtonDefaults.buttonColors(Col
 //    or(0xFF87CEEB))
@@ -43,11 +45,23 @@ fun LoginButtonContainer(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
+        // 자체 로그인
         LoginButton(
             loginViewModel = loginViewModel,
             userInput = userInput,
             passwordInput = passwordInput,
-        )
+            onClickLoginBtn = {
+                loginViewModel.login(
+                    username = userInput,
+                    password = passwordInput,
+                    onSuccess = {
+                        navController.navigate("home")
+                    },
+                    onFailure = { message ->
+                        // 로그인 실패 처리
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    })
+            })
 
         KakaoButton(
             kakaoViewModel = kakaoViewModel,
@@ -58,8 +72,7 @@ fun LoginButtonContainer(
             onClick = {
                 // TODO: 임시 설정
                 navController.navigate("home")
-            }
-        )
+            })
 
     }
 }
@@ -76,12 +89,9 @@ fun Test(
             .padding(start = 20.dp, end = 20.dp),
         colors = ButtonDefaults.buttonColors(Color.Black),
         shape = RoundedCornerShape(15.dp),
-        onClick = { onClick() }
-    ) {
+        onClick = { onClick() }) {
         Text(
-            text = "홈으로 이동(임시)",
-            fontSize = 20.sp,
-            color = Color.White
+            text = "홈으로 이동(임시)", fontSize = 20.sp, color = Color.White
         )
     }
 }
@@ -91,12 +101,18 @@ fun LoginButton(
     loginViewModel: LoginViewModel,
     userInput: String,
     passwordInput: String,
+    onClickLoginBtn: () -> Unit
+
 ) {
-    val loginViewModel: LoginViewModel = viewModel()
+//    val loginViewModel: LoginViewModel = viewModel()
 
     Button(
         onClick = {
-            loginViewModel.loginTest(UserDTO.from(userId = userInput, password = passwordInput))
+            onClickLoginBtn()
+//            loginViewModel.loginTest(UserDTO.from(userId = userInput, password = passwordInput))
+//            loginViewModel.login(
+//                username = userInput, password = passwordInput
+//            )
         },
         modifier = Modifier
             .fillMaxWidth()
@@ -107,8 +123,7 @@ fun LoginButton(
         shape = RoundedCornerShape(15.dp)
     ) {
         Text(
-            text = "로그인",
-            fontSize = 20.sp
+            text = "로그인", fontSize = 20.sp
         )
     }
 }
@@ -116,8 +131,7 @@ fun LoginButton(
 
 @Composable
 fun KakaoButton(
-    kakaoViewModel: KakaoViewModel,
-    navController: NavController
+    kakaoViewModel: KakaoViewModel, navController: NavController
 ) {
     var loginSuccess by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
@@ -139,9 +153,7 @@ fun KakaoButton(
         shape = RoundedCornerShape(15.dp)
     ) {
         Text(
-            text = "카카오 로그인 하기",
-            fontSize = 20.sp,
-            color = Color.Black
+            text = "카카오 로그인 하기", fontSize = 20.sp, color = Color.Black
         )
     }
 
@@ -151,8 +163,7 @@ fun KakaoButton(
 
 @Composable
 fun NaverButton(
-    viewModel: KakaoViewModel,
-    navController: NavController
+    viewModel: KakaoViewModel, navController: NavController
 ) {
     Column {
         Button(onClick = {
