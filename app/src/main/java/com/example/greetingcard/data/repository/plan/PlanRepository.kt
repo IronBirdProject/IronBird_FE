@@ -1,6 +1,7 @@
 package com.example.greetingcard.data.repository.plan
 
 import com.example.greetingcard.data.model.dto.plan.PlanCreateDto
+import com.example.greetingcard.data.model.dto.plan.PlanUpdateDto
 import com.example.greetingcard.data.model.dto.plan.ScheduleAddDto
 import com.example.greetingcard.data.model.response.Plan
 import com.example.greetingcard.data.model.response.PlanPreview
@@ -36,12 +37,12 @@ class PlanRepository @Inject constructor(
     }
 
     // 플랜 수정
-    suspend fun updatePlan(planId: Int, plan: Plan): Response<Plan> {
-        return planApi.updatePlan(planId, plan)
+    suspend fun updatePlan(planId: Int, planUpdateDto: PlanUpdateDto): Response<Plan> {
+        return planApi.updatePlan(planId, planUpdateDto)
     }
 
     // 플랜 삭제
-    suspend fun deletePlan(planId: Int): Response<String> {
+    suspend fun deletePlan(planId: Int): Response<Unit> {
         return planApi.deletePlan(planId)
     }
 

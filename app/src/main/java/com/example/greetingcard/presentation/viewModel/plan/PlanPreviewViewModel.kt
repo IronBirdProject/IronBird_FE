@@ -43,6 +43,10 @@ class PlanPreviewViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
+                Log.d(
+                    "플랜 목록 불러오기",
+                    "유저 ID: $userId, 로딩 시작"
+                )
                 val res = repository.getPlansByUserId(userId)
                 if (res.isSuccessful) {
                     _planPreviews.value = res.body() ?: emptyList()
@@ -50,11 +54,33 @@ class PlanPreviewViewModel @Inject constructor(
                     Log.d("플랜 목록 불러오기 성공", planPreviews.value.toString())
                 } else {
                     _error.value = "오류 코드: ${res.code()}"
+                    Log.e("플랜 목록 불러오기 실패", "오류 코드: ${res.code()}")
                 }
             } catch (e: Exception) {
                 _error.value = e.localizedMessage
+                Log.e("플랜 목록 불러오기 예외", e.toString())
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+
+    fun deletePlan(
+        planId: Int,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val response = repository.deletePlan(planId)
+                if (response.isSuccessful) {
+                    loadPlanPreviews(userId = 1)
+                    onSuccess()
+                } else {
+                    onFailure("삭제 실패: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                onFailure(e.localizedMessage ?: "알 수 없는 오류")
             }
         }
     }

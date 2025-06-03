@@ -14,80 +14,61 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.greetingcard.R
 
-// body 부분 그리드 리스트
 @Composable
 fun FeaturesGrid() {
-    val localConfiguration = LocalConfiguration.current
-    val cardItemSize = localConfiguration.screenWidthDp.dp / 2
-//    LazyVerticalGrid(
-//        columns = GridCells.Fixed(2),
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .heightIn(max = 600.dp)
-//            .wrapContentHeight(),
-//        userScrollEnabled = false,
-//        contentPadding = PaddingValues(horizontal = 25.dp, vertical = 12.dp)
-//    ) {
-//        items(features) { (title, description, img) ->
-//            FeatureCard(title = title, description = description, img = img)
-//        }
-//    }
+    val cardSize = (LocalConfiguration.current.screenWidthDp.dp - 60.dp) / 2
+
     Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
+            .padding(vertical = 12.dp)
     ) {
         FeatureCard(
-            modifier = Modifier.weight(1f),
-            width = cardItemSize,
+            width = cardSize,
             title = "내 항공권",
-            description = "항공권 모음 탭",
-            img = R.drawable.ticket_icon,
+            description = "예약한 항공권 보기",
+            img = R.drawable.ticket_icon
         )
+
         FeatureCard(
-            modifier = Modifier.weight(1f),
-            width = cardItemSize,
-            title = "다른거",
-            description = "다른거",
-            img = R.drawable.ticket_icon,
+            width = cardSize,
+            title = "탐색하기",
+            description = "인기 여행지 보기",
+            img = R.drawable.travel_icon
         )
     }
 }
 
+
 // body 부분 그리드 리스트의 아이템
 @Composable
 fun FeatureCard(
-    modifier: Modifier = Modifier,
     width: Dp,
     title: String,
     description: String,
     img: Int
 ) {
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xffeaeaea),
-        ),
-        modifier = modifier
-            .padding(10.dp)
+        modifier = Modifier
             .width(width)
-            .clip(RoundedCornerShape(20.dp))
             .aspectRatio(1f)
-            .clickable { /* Navigate to the feature */ }
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { /* TODO */ },
+        colors = CardDefaults.cardColors(containerColor = Color(0xfff5f5f5))
     ) {
         Column(
             modifier = Modifier
@@ -96,26 +77,14 @@ fun FeatureCard(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text(
-                    text = title,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = description,
-                    color = Color.Gray,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Text(title, fontWeight = FontWeight.Bold)
+                Text(description, fontSize = 12.sp, color = Color.Gray)
             }
-            Row(
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 Image(
-                    painter = painterResource(img),
-                    contentDescription = "background",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.size(50.dp)
+                    painter = painterResource(id = img),
+                    contentDescription = "icon",
+                    modifier = Modifier.size(48.dp)
                 )
             }
         }

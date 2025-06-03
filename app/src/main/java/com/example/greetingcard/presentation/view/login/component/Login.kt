@@ -36,19 +36,19 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.greetingcard.presentation.viewModel.login.LoginViewModel
+import com.example.greetingcard.presentation.viewModel.login.AuthViewModel
 
 @Composable
 fun Login(
     navController: NavController,
-    loginViewModel: LoginViewModel,
+    authViewModel: AuthViewModel,
     modifier: Modifier = Modifier
 ) {
 //    val loginViewModel: LoginViewModel = viewModel()
 
-    loginViewModel.isLoading.value
-    loginViewModel.loginResult.value
-    loginViewModel.errorMessage.value
+    authViewModel.isLoading.value
+    authViewModel.loginResult.value
+    authViewModel.errorMessage.value
 
     var userInput by remember { mutableStateOf("") }
     var passwordInput by remember { mutableStateOf("") }
@@ -91,7 +91,7 @@ fun Login(
             navController = navController,
             userInput = userInput,
             passwordInput = passwordInput,
-            loginViewModel = loginViewModel
+            authViewModel = authViewModel
         )
 
         LoginActionRow(navController)

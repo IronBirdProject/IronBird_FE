@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -110,7 +111,7 @@ fun ScheduleDetailBottomSheet(schedule: Schedule?, onSaveMemo: (String) -> Unit)
         modifier = Modifier
             .padding(horizontal = 30.dp)
             .background(color = Color.White)
-            .height(150.dp)
+            .fillMaxHeight()
     ) {
         // 스케쥴 description
         Text(text = schedule!!.description, style = MaterialTheme.typography.titleMedium)

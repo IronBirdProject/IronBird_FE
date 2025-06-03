@@ -42,10 +42,10 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun AddScheduleBottomSheet(
     selectedDay: Int,
-    onSave: (title: String, desc: String, cost: Int, memo: String, time: String) -> Unit,
+    onSave: (desc: String, cost: Int, memo: String, time: String) -> Unit,
     onCancel: () -> Unit
 ) {
-    var title by remember { mutableStateOf("") }
+//    var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var cost by remember { mutableStateOf(0) }
     var memo by remember { mutableStateOf("") }
@@ -76,14 +76,14 @@ fun AddScheduleBottomSheet(
             modifier = Modifier.padding(top = 4.dp, bottom = 24.dp)
         )
 
-        // 필드 입력 섹션
-        LabeledInputField(label = "제목") {
-            AppleStyleInputField(
-                value = title,
-                onValueChange = { title = it },
-                placeholder = "예: 미마루 호텔 체크인"
-            )
-        }
+//        // 필드 입력 섹션
+//        LabeledInputField(label = "제목") {
+//            AppleStyleInputField(
+//                value = title,
+//                onValueChange = { title = it },
+//                placeholder = "예: 미마루 호텔 체크인"
+//            )
+//        }
 
         LabeledInputField(label = "설명") {
             AppleStyleInputField(
@@ -148,7 +148,7 @@ fun AddScheduleBottomSheet(
             }
 
             Button(
-                onClick = { onSave(title, description, cost, memo, time) },
+                onClick = { onSave(description, cost, memo, time) },
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Text("저장")

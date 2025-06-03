@@ -1,6 +1,7 @@
 package com.example.greetingcard.data.source.api
 
 import com.example.greetingcard.data.model.dto.plan.PlanCreateDto
+import com.example.greetingcard.data.model.dto.plan.PlanUpdateDto
 import com.example.greetingcard.data.model.dto.plan.ScheduleAddDto
 import com.example.greetingcard.data.model.response.Plan
 import com.example.greetingcard.data.model.response.PlanPreview
@@ -29,15 +30,18 @@ interface PlanApi {
 
     // 플랜 생성
     @POST("api/plan/create")
-    suspend fun createPlan(@Body plan: PlanCreateDto): Response<Plan>
+    suspend fun createPlan(@Body planCreateDto: PlanCreateDto): Response<Plan>
 
     // 플랜 수정
     @PUT("api/plan/update/{planId}")
-    suspend fun updatePlan(@Path("planId") planId: Int, @Body plan: Plan): Response<Plan>
+    suspend fun updatePlan(
+        @Path("planId") planId: Int,
+        @Body planUpdateDto: PlanUpdateDto
+    ): Response<Plan>
 
     // 플랜 삭제
     @DELETE("api/plan/{planId}")
-    suspend fun deletePlan(@Path("planId") planId: Int): Response<String>
+    suspend fun deletePlan(@Path("planId") planId: Int): Response<Unit>
 
     // 스케쥴 생성
     @POST("api/plan/{planId}/schedules")

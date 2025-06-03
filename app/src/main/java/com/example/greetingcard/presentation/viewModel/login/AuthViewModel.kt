@@ -13,9 +13,10 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
+class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
+
 
     val isLoading = mutableStateOf(false)
     val errorMessage = mutableStateOf<String?>(null)

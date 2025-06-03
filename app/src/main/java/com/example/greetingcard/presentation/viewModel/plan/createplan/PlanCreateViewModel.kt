@@ -27,6 +27,11 @@ class PlanCreateViewModel @Inject constructor(
         Log.d("PlanCreateViewModel", "ViewModel 초기화됨")
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("PlanCreateViewModel", "ViewModel이 해제됨")
+    }
+
     /**
      * 날짜 선택 파트
      * */

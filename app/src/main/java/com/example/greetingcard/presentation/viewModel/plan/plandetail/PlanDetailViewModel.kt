@@ -3,6 +3,7 @@ package com.example.greetingcard.presentation.viewModel.plan.plandetail
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.greetingcard.data.model.dto.plan.PlanUpdateDto
 import com.example.greetingcard.data.model.dto.plan.ScheduleAddDto
 import com.example.greetingcard.data.model.response.Plan
 import com.example.greetingcard.data.repository.plan.PlanRepository
@@ -17,31 +18,9 @@ class PlanDetailViewModel @Inject constructor(
     private val planRepository: PlanRepository
 ) : ViewModel() {
 
-    // Repository
-//    private val planRepository: PlanRepository = PlanRepository()
-
     // UI에서 관찰할 플랜 상세 상태
     private val _planDetailState = MutableStateFlow(PlanDetailState())
     val planDetailState: StateFlow<PlanDetailState> = _planDetailState
-
-    // TODO: 실제 API 연동 전까지 임시로 사용하는 더미 플랜
-//    private val dummyPlan = Plan(
-//        id = 1,
-//        title = "나홀로 도쿄",
-//        startDate = "2024.01.04",
-//        endDate = "2024.01.10",
-//        schedules = listOf(
-//            Schedule(1, 1, "08:40", "미마루 스위트 교토 시조", 320000, "8시에는 도착해야댐"),
-//            Schedule(2, 2, "09:11", "교토 -> 오사카 이동", 21000, null),
-//            Schedule(3, 1, "10:00", "타코야끼 먹기", 3000, null),
-//            Schedule(4, 3, "11:00", "관광 및 쇼핑", null, null),
-//            Schedule(5, 4, "11:00", "관광 및 쇼핑", null, null),
-//            Schedule(6, 5, "11:00", "관광 및 쇼핑", null, null),
-//            Schedule(7, 6, "11:00", "관광 및 쇼핑", null, null),
-//        ),
-//        planId = 100,
-//        backgroundImg = "https://media.istockphoto.com/...jpg"
-//    )
 
     /**
      * planId에 해당하는 상세 플랜 정보를 가져옵니다
@@ -94,6 +73,60 @@ class PlanDetailViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.d("스케쥴 생성 에러", "${e.message}")
+            }
+        }
+    }
+
+    /**
+     * 플랜 삭제 메서드
+     */
+    fun deletePlan(planId: Int, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = planRepository.deletePlan(planId)
+                if (response.isSuccessful) {
+                    Log.d("플랜 삭제 성공", "플랜 ID: $planId")
+                    // 삭제 후 다시 목록을 불러오기
+                    fetchPlanDetails(1) // 예시로 userId를 1로 설정
+                    onSuccess() // 성공 콜백 호출
+                } else {
+                    Log.e("플랜 삭제 실패", "오류 코드: ${response.code()}")
+                    onError("플랜 삭제 실패: 오류 코드 ${response.code()}") // 에러 콜백 호출
+                }
+            } catch (e: Exception) {
+                Log.e("플랜 삭제 예외", e.toString())
+                onError("플랜 삭제 실패: ${e.localizedMessage}") // 에러 콜백 호출
+            }
+        }
+    }
+
+    /**
+     * 플랜 수정 메서드
+     */
+    fun updatePlan(
+        planId: Int,
+        title: String? = null,
+        startDate: String? = null,
+        endDate: String? = null,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val updatedPlanDto = PlanUpdateDto.fromPlan(
+                    title = title,
+                    startedDate = startDate,
+                    endDate = endDate
+                )
+                val response = planRepository.updatePlan(planId, updatedPlanDto)
+                if (response.isSuccessful) {
+                    fetchPlanDetails(planId)
+                    onSuccess()
+                } else {
+                    onFailure("오류 코드: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                onFailure(e.localizedMessage ?: "알 수 없는 오류")
             }
         }
     }

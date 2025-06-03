@@ -60,25 +60,25 @@ import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.example.greetingcard.data.model.dto.user.UserDTO
 import com.example.greetingcard.presentation.view.login.view.CustomInputField
-import com.example.greetingcard.presentation.viewModel.login.LoginViewModel
+import com.example.greetingcard.presentation.viewModel.login.AuthViewModel
 
 @Composable
 fun LoginJoin(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    val loginViewModel: LoginViewModel = viewModel()
+    val authViewModel: AuthViewModel = viewModel()
 
     Column {
         LoginTitle("회원가입")
-        JoinForm(navController, loginViewModel)
+        JoinForm(navController, authViewModel)
     }
 }
 
 @Composable
 fun JoinForm(
     navController: NavController,
-    loginViewModel: LoginViewModel,
+    authViewModel: AuthViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(

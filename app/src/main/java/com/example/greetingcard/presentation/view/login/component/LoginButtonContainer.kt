@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.greetingcard.presentation.viewModel.login.LoginViewModel
+import com.example.greetingcard.presentation.viewModel.login.AuthViewModel
 import com.example.greetingcard.presentation.viewModel.login.kakao.KakaoViewModel
 
 
@@ -31,7 +31,7 @@ fun LoginButtonContainer(
     navController: NavController,
     userInput: String,
     passwordInput: String,
-    loginViewModel: LoginViewModel,
+    authViewModel: AuthViewModel,
 
     ) {
     val kakaoViewModel: KakaoViewModel = viewModel()
@@ -47,11 +47,11 @@ fun LoginButtonContainer(
     ) {
         // 자체 로그인
         LoginButton(
-            loginViewModel = loginViewModel,
+            authViewModel = authViewModel,
             userInput = userInput,
             passwordInput = passwordInput,
             onClickLoginBtn = {
-                loginViewModel.login(
+                authViewModel.login(
                     username = userInput,
                     password = passwordInput,
                     onSuccess = {
@@ -98,7 +98,7 @@ fun Test(
 
 @Composable
 fun LoginButton(
-    loginViewModel: LoginViewModel,
+    authViewModel: AuthViewModel,
     userInput: String,
     passwordInput: String,
     onClickLoginBtn: () -> Unit

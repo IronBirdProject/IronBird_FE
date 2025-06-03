@@ -1,5 +1,8 @@
 package com.example.greetingcard.presentation.view.my_info
 
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,22 +10,29 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -31,26 +41,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.greetingcard.R
 import com.example.greetingcard.data.model.response.PlanPreview
+import com.example.greetingcard.presentation.view.plan.component.PlanDeleteDialog
 import com.example.greetingcard.presentation.viewModel.plan.PlanPreviewViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyPlanScreen(navController: NavController, viewModel: PlanPreviewViewModel) {
-    val planList by viewModel.planPreviews.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
+fun MyPlanScreen(navController: NavController, planPreviewViewModel: PlanPreviewViewModel) {
+    val planList by planPreviewViewModel.planPreviews.collectAsState()
+    val isLoading by planPreviewViewModel.isLoading.collectAsState()
+    val error by planPreviewViewModel.error.collectAsState()
+
+    // 삭제 다이얼로그 상태
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var deleteTargetPlanId by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(Unit) {
-        viewModel.loadPlanPreviews(userId = 1) // 로그인 유저 ID
+        planPreviewViewModel.loadPlanPreviews(userId = 1) // 로그인 유저 ID
     }
 
     Scaffold(
@@ -88,88 +109,151 @@ fun MyPlanScreen(navController: NavController, viewModel: PlanPreviewViewModel) 
                     .fillMaxSize()
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 10.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                contentPadding = PaddingValues(top = 16.dp, bottom = 32.dp)
             ) {
+                item {
+                    Text(
+                        text = "다가오는 여행",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
                 items(planList, key = { it.id }) { preview ->
-                    PlanCard(plan = preview, onClick = {
-                        navController.navigate("detail_plan/${preview.id}")
-                    })
+                    PlanCard(
+                        plan = preview,
+                        onClick = {
+                            navController.navigate("detail_plan/${preview.id}")
+                        },
+                        onEdit = {
+                            // 수정 로직 (예: 다이얼로그 열기)
+//                            viewModel.openEditDialog(preview)
+                        },
+                        onDelete = {
+                            // 삭제 로직 (예: 다이얼로그 열기)
+                            deleteTargetPlanId = preview.id
+                            showDeleteDialog = true
+                        }
+                    )
                 }
             }
+        }
+
+        if (showDeleteDialog) {
+            Log.d("플랜 삭제 다이얼로그", "삭제 다이얼로그 표시: $deleteTargetPlanId")
+            // 삭제 다이얼로그 표시
+            PlanDeleteDialog(
+                onConfirm = {
+                    // 삭제 로직 호출
+                    planPreviewViewModel.deletePlan(
+                        planId = deleteTargetPlanId
+                            ?: return@PlanDeleteDialog, // 안전하게 ID가 null이 아닌지 확인
+                        onSuccess = {
+                            Toast.makeText(
+                                navController.context,
+                                "플랜이 삭제되었습니다.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        },
+                        onFailure = { errorMessage ->
+                            // 삭제 실패 처리 (예: Toast 메시지)
+                            Toast.makeText(
+                                navController.context,
+                                "플랜 삭제 실패: $errorMessage",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    )
+                    showDeleteDialog = false
+                    Toast.makeText(
+                        navController.context,
+                        "플랜이 삭제되었습니다.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                onDismiss = { showDeleteDialog = false }
+            )
         }
     }
 }
 
-
 @Composable
-// 복잡한 데이터 아니라 그냥 plan 넘김
-fun PlanCard(plan: PlanPreview, onClick: () -> Unit) {
+fun PlanCard(
+    plan: PlanPreview,
+    onClick: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(2.5f)
-//            .clip(RoundedCornerShape(20.dp))
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp,
-        ),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = Color.White // 카드 배경색
-        ),
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
     ) {
-//        Box {
-        // 배경 이미지 또는 placeholder
-//            Image(
-//                painter = painterResource(id = R.drawable.sea), // 기본 이미지
-//                contentDescription = null,
-//                contentScale = ContentScale.FillBounds,
-//                modifier = Modifier.matchParentSize()
-//            )
-//
-//            // 반투명 오버레이
-//            Box(
-//                modifier = Modifier
-//                    .matchParentSize()
-//                    .background(Color.Black.copy(alpha = 0.4f))
-//            )
-
-        // 내용
-        Column(
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-//                .background(Color.White)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = plan.title,
-                style = TextStyle(
-                    fontSize = 20.sp,
-//                        color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
+            // 썸네일 이미지 (고정 or 서버에서 받아오기)
+            Image(
+                painter = painterResource(R.drawable.japan),
+                contentDescription = "Plan thumbnail",
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    modifier = Modifier.padding(bottom = 5.dp),
-                    text = "${plan.startedDate} ~ ${plan.endDate}",
-//                        style = MaterialTheme.typography.bodySmall.copy(color = Color.White)
+                    text = plan.title,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
                 )
-                IconButton(onClick = { /* 공유 로직 */ }) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = "공유",
-//                            tint = Color.White
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "${plan.startedDate} ~ ${plan.endDate}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+
+            Box {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "더보기")
+                }
+
+                DropdownMenu(
+                    modifier = Modifier
+                        .background(Color.White),
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("수정") },
+                        onClick = {
+                            expanded = false
+                            onEdit()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("삭제") },
+                        onClick = {
+                            expanded = false
+                            onDelete()
+                        }
                     )
                 }
             }
         }
     }
 }
-//}

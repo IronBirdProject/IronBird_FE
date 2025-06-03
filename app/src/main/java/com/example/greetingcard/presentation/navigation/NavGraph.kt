@@ -17,7 +17,7 @@ import com.example.greetingcard.presentation.view.my_info.MyPlanScreen
 import com.example.greetingcard.presentation.view.plan.plandetail.PlanDetailScreen
 import com.example.greetingcard.presentation.viewModel.home.HomeViewModel
 import com.example.greetingcard.presentation.viewModel.home.PostViewModel
-import com.example.greetingcard.presentation.viewModel.login.LoginViewModel
+import com.example.greetingcard.presentation.viewModel.login.AuthViewModel
 import com.example.greetingcard.presentation.viewModel.plan.PlanPreviewViewModel
 import com.example.greetingcard.presentation.viewModel.plan.plandetail.PlanDetailViewModel
 
@@ -26,12 +26,11 @@ fun SetUpNavGraph(
     navController: NavHostController,
 ) {
     NavHost(
-        navController = navController,
-        startDestination = Screen.Login.route
+        navController = navController, startDestination = Screen.Login.route
     ) {
         composable(Screen.Login.route) {
-            val loginViewModel: LoginViewModel = hiltViewModel()
-            Login(navController = navController, loginViewModel = loginViewModel)
+            val authViewModel: AuthViewModel = hiltViewModel()
+            Login(navController = navController, authViewModel = authViewModel)
         }
         composable(Screen.LoginFinder.route) { backStackEntry ->
             val viewType = backStackEntry.arguments?.getString("viewType") ?: "findId"
@@ -70,7 +69,7 @@ fun SetUpNavGraph(
         // 내 플랜 화면
         composable(Screen.MyPlan.route) {
             val planPreviewViewModel: PlanPreviewViewModel = hiltViewModel()
-            MyPlanScreen(navController = navController, viewModel = planPreviewViewModel)
+            MyPlanScreen(navController = navController, planPreviewViewModel = planPreviewViewModel)
         }
         // 플랜 상세 화면
         composable(
@@ -79,7 +78,11 @@ fun SetUpNavGraph(
         ) { backStackEntry ->
             val planDetailViewModel: PlanDetailViewModel = hiltViewModel()
             val planId: Int? = backStackEntry.arguments?.getInt("id")
-            PlanDetailScreen(planId = planId, planDetailViewModel = planDetailViewModel)
+            PlanDetailScreen(
+                planId = planId,
+                planDetailViewModel = planDetailViewModel,
+                navController = navController
+            )
         }
 
         composable(

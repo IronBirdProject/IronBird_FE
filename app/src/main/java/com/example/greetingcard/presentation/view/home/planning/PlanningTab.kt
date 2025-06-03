@@ -1,6 +1,5 @@
 package com.example.greetingcard.presentation.view.home.planning
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,12 +20,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.NotificationsNone
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -49,90 +48,73 @@ import coil3.compose.AsyncImage
 import com.example.greetingcard.R
 
 
-// 플래닝 화면
 @Composable
 fun PlanningScreen(navController: NavController, listState: LazyListState) {
-    println("플래닝탭 listState: $listState")
     LazyColumn(
         state = listState,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(horizontal = 20.dp)
     ) {
         item {
-//            SearchBar()
+            // 유저 정보 + 알림 버튼
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { }
-                    .padding(horizontal = 30.dp, vertical = 10.dp),
+                    .padding(top = 20.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     AsyncImage(
-                        // TODO: 유저 프로필 이미지 url 주입
-                        model = "",
+                        model = "", // 프로필 이미지 URL
                         error = painterResource(R.drawable.user_profile),
-                        contentDescription = "user_info_profile_image",
+                        contentDescription = "프로필",
                         modifier = Modifier
                             .size(60.dp)
                             .clip(CircleShape),
-                        contentScale = ContentScale.FillBounds
+                        contentScale = ContentScale.Crop
                     )
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(12.dp))
                     Column {
-                        Text(
-                            text = "김수현",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        Text(
-                            text = "초보 여행자",
-                            color = Color.Gray,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Text("김수현 님 👋", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                        Text("초보 여행자", color = Color.Gray, fontSize = 14.sp)
                     }
                 }
-                IconButton(
-                    modifier = Modifier.size(60.dp),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Color(0xffefefef)
-                    ),
-                    onClick = {
-                        // TODO: 알림 연동
-                    }
-                ) {
+
+                IconButton(onClick = { /* 알림 클릭 */ }) {
                     Icon(
-                        imageVector = Icons.Default.NotificationsNone,
-                        contentDescription = "notification",
-                        modifier = Modifier.size(35.dp),
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "알림",
+                        modifier = Modifier.size(28.dp)
                     )
                 }
             }
         }
+
         item {
+            Spacer(modifier = Modifier.height(20.dp))
             UserInfoCard(
-                modifier = Modifier.padding(horizontal = 30.dp, vertical = 10.dp),
-                onUserProfileClicked = {
-                    Log.d(
-                        "UserInfo Click",
-                        "============ Click ============"
-                    )
-                },
+                onUserProfileClicked = { /* 마이페이지 이동 */ },
                 onPlanClicked = { navController.navigate("my_plan") },
-                onPostingClicked = {
-                    Log.d("Posting Click", "============ Click ============")
-                })
+                onPostingClicked = { /* 포스팅으로 이동 */ }
+            )
         }
-        item {
-            FeaturesGrid()
-        }
+
         item {
             Spacer(modifier = Modifier.height(12.dp))
+            FeaturesGrid()
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
             AdvertisementSection(navController = navController)
             Spacer(modifier = Modifier.height(60.dp))
         }
     }
 }
+
 
 // 검색창
 @OptIn(ExperimentalMaterial3Api::class)
