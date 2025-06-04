@@ -17,6 +17,7 @@ fun PlanDeleteDialog(
     onDismiss: () -> Unit
 ) {
     AlertDialog(
+        containerColor = Color.White,
         onDismissRequest = { onDismiss() },
         title = { Text("플랜 삭제") },
         text = { Text("정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.") },

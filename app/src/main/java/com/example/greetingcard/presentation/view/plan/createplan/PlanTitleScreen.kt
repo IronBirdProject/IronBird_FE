@@ -140,6 +140,7 @@ fun PlanTitleScreen(
 
     if (showSuccessDialog) {
         AlertDialog(
+            containerColor = Color.White,
             onDismissRequest = {},
             title = { Text("여행 생성 완료!") },
             text = { Text("여행 일정이 성공적으로 생성되었습니다.") },

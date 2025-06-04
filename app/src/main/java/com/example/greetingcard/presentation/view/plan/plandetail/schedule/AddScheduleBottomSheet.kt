@@ -86,7 +86,7 @@ fun AddScheduleBottomSheet(
 //        }
 
         LabeledInputField(label = "설명") {
-            AppleStyleInputField(
+            AddScheduleInfoInputField(
                 value = description,
                 onValueChange = { description = it },
                 placeholder = "장소 설명"
@@ -94,7 +94,7 @@ fun AddScheduleBottomSheet(
         }
 
         LabeledInputField(label = "필요 금액") {
-            AppleStyleInputField(
+            AddScheduleInfoInputField(
                 value = cost.toString(),
                 onValueChange = {
                     cost = it.toIntOrNull() ?: 0
@@ -124,7 +124,7 @@ fun AddScheduleBottomSheet(
         }
 
         LabeledInputField(label = "메모") {
-            AppleStyleInputField(
+            AddScheduleInfoInputField(
                 value = memo,
                 onValueChange = { memo = it },
                 placeholder = "필요시 간단한 메모 작성",
@@ -141,7 +141,7 @@ fun AddScheduleBottomSheet(
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)
         ) {
             OutlinedButton(
-                onClick = onCancel,
+                onClick = { onCancel() },
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Text("취소")
@@ -175,7 +175,7 @@ private fun LabeledInputField(label: String, content: @Composable () -> Unit) {
 
 
 @Composable
-private fun AppleStyleInputField(
+private fun AddScheduleInfoInputField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,

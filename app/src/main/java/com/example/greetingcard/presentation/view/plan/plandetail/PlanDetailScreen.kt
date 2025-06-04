@@ -1,12 +1,15 @@
 package com.example.greetingcard.presentation.view.plan.plandetail
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,10 +19,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,25 +29,27 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.greetingcard.R
 import com.example.greetingcard.data.model.response.Plan
 import com.example.greetingcard.data.model.response.Schedule
 import com.example.greetingcard.presentation.ui.common.CustomLoadingIndicator
@@ -102,9 +105,7 @@ fun PlanDetailScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlanDetailContent(
-    plan: Plan,
-    planDetailViewModel: PlanDetailViewModel,
-    navController: NavController
+    plan: Plan, planDetailViewModel: PlanDetailViewModel, navController: NavController
 ) {
     val context = LocalContext.current
     val scheduleSheetState = rememberModalBottomSheetState()
@@ -125,7 +126,7 @@ fun PlanDetailContent(
         }
     }
 
-    var selectedDay by remember { mutableStateOf(1) }
+    var selectedDay by remember { mutableIntStateOf(1) }
 
     var isEditOptionSheetOpen by remember { mutableStateOf(false) }
     var isEditTitleDialogOpen by remember { mutableStateOf(false) }
@@ -134,6 +135,135 @@ fun PlanDetailContent(
 
     val editedTitle by remember { mutableStateOf(plan.title) }
 
+
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+//            .navigationBarsPadding(),
+        contentPadding = PaddingValues(bottom = 20.dp)
+    ) {
+        item {
+            Box {
+                Image(
+                    painter = painterResource(id = getImageForDestination(plan.destination)),
+                    contentDescription = "여행지 이미지",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)),
+                    contentScale = ContentScale.Crop
+                )
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier
+                        .padding(top = 30.dp)
+                        .align(Alignment.TopStart)
+                ) {
+                    Icon(
+                        Icons.Default.ArrowBackIosNew,
+                        contentDescription = "뒤로가기",
+                        tint = Color.Black.copy(alpha = 0.7f)
+                    )
+                }
+                IconButton(
+                    onClick = { showDeleteDialog = true },
+                    modifier = Modifier
+                        .padding(top = 30.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        Icons.Default.DeleteOutline,
+                        contentDescription = "플랜 삭제",
+                        tint = Color.Black.copy(alpha = 0.7f)
+                    )
+                }
+            }
+        }
+        item {
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = plan.title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "편집",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray,
+                        modifier = Modifier.clickable { isEditOptionSheetOpen = true })
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "${plan.startedDate} ~ ${plan.endDate}",
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "총 일정 ${plan.schedules.size}개 / ₩${plan.schedules.sumOf { it.cost ?: 0 }}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+
+        dayDateList.forEach { (day, dateText) ->
+            item {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                    Text(
+                        text = "Day $day - $dateText",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    val schedules = plan.schedules.filter { it.day == day }
+                    schedules.forEach { schedule ->
+                        ScheduleItem(
+                            schedule = schedule,
+                            onScheduleClicked = { selectedSchedule = schedule })
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            selectedDay = day
+                            isAddLocationModalOpen = true
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text("장소 추가")
+                    }
+                }
+            }
+        }
+    }
+
+    // 스케쥴 추가 모달
+    if (isAddLocationModalOpen) {
+        ModalBottomSheet(
+            sheetState = addLocationSheetState,
+            onDismissRequest = { isAddLocationModalOpen = false },
+            containerColor = Color.White,
+            windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp) // 네비게이션 바 패딩 제거
+        ) {
+            AddScheduleBottomSheet(selectedDay = selectedDay, onSave = { desc, cost, memo, time ->
+                planDetailViewModel.addSchedule(
+                    description = desc,
+                    time = time,
+                    day = selectedDay,
+                    cost = cost,
+                    memo = memo,
+                    planId = plan.id
+                )
+                isAddLocationModalOpen = false
+            }, onCancel = { isAddLocationModalOpen = false })
+        }
+    }
 
     // 여행 수정 다이얼로그
     if (isEditOptionSheetOpen) {
@@ -171,13 +301,11 @@ fun PlanDetailContent(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Black, // 수정 버튼 색상
                         contentColor = Color.White // 텍스트 색상
-                    ),
-                    onClick = {
+                    ), onClick = {
                         isEditOptionSheetOpen = false
                         isEditDateScreenOpen = true // ← 캘린더로 이동
                         // 날짜 수정은 추후 처리
-                    },
-                    modifier = Modifier
+                    }, modifier = Modifier
                         .fillMaxWidth()
                         .height(45.dp)
                 ) {
@@ -187,6 +315,7 @@ fun PlanDetailContent(
         }
     }
 
+    // 날짜 수정 다이얼로그
     if (isEditDateScreenOpen) {
         CalendarEditDialog(
             initialStartDate = LocalDate.parse(plan.startedDate),
@@ -202,11 +331,9 @@ fun PlanDetailContent(
                     },
                     onFailure = {
                         Toast.makeText(context, "수정 실패: $it", Toast.LENGTH_SHORT).show()
-                    }
-                )
+                    })
             },
-            onDismiss = { isEditDateScreenOpen = false }
-        )
+            onDismiss = { isEditDateScreenOpen = false })
     }
 
 
@@ -216,33 +343,25 @@ fun PlanDetailContent(
             sheetState = scheduleSheetState,
             onDismissRequest = { selectedSchedule = null },
             containerColor = Color.White,
-            modifier = Modifier.fillMaxHeight(0.4f)
+            modifier = Modifier.fillMaxHeight(0.25f),
+            windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp) // 네비게이션 바 패딩 제거
         ) {
             ScheduleDetailBottomSheet(
-                schedule = schedule,
-                onSaveMemo = { selectedSchedule = null }
-            )
+                schedule = schedule, onSaveMemo = { selectedSchedule = null })
         }
     }
 
     if (showDeleteDialog) {
         // 삭제 다이얼로그 표시
-        PlanDeleteDialog(
-            onConfirm = {
-                planDetailViewModel.deletePlan(
-                    planId = plan.id,
-                    onSuccess = {
-                        Toast.makeText(context, "플랜이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                        navController.popBackStack() // 삭제 후 이전 화면으로 이동
-                    },
-                    onError = {
-                        Toast.makeText(context, "삭제 실패: $it", Toast.LENGTH_SHORT).show()
-                    }
-                )
-                showDeleteDialog = false
-            },
-            onDismiss = { showDeleteDialog = false }
-        )
+        PlanDeleteDialog(onConfirm = {
+            planDetailViewModel.deletePlan(planId = plan.id, onSuccess = {
+                Toast.makeText(context, "플랜이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                navController.popBackStack() // 삭제 후 이전 화면으로 이동
+            }, onError = {
+                Toast.makeText(context, "삭제 실패: $it", Toast.LENGTH_SHORT).show()
+            })
+            showDeleteDialog = false
+        }, onDismiss = { showDeleteDialog = false })
     }
 
 
@@ -250,145 +369,29 @@ fun PlanDetailContent(
         isDialogOpen = isEditTitleDialogOpen,
         currentTitle = editedTitle,
         onConfirm = { newTitle ->
-            planDetailViewModel.updatePlan(
-                planId = plan.id,
-                title = newTitle,
-                onSuccess = {
-                    Toast.makeText(context, "제목이 수정되었습니다.", Toast.LENGTH_SHORT).show()
-                    isEditTitleDialogOpen = false
+            planDetailViewModel.updatePlan(planId = plan.id, title = newTitle, onSuccess = {
+                Toast.makeText(context, "제목이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                isEditTitleDialogOpen = false
 
-                },
-                onFailure = {
-                    Toast.makeText(context, "제목 수정 실패: $it", Toast.LENGTH_SHORT).show()
-                }
-            )
+            }, onFailure = {
+                Toast.makeText(context, "제목 수정 실패: $it", Toast.LENGTH_SHORT).show()
+            })
         },
-        onDismiss = { isEditTitleDialogOpen = false }
-    )
-
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
-                title = {},
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로가기")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* TODO: 공유 기능 */ }) {
-                        Icon(Icons.Default.Share, contentDescription = "공유")
-                    }
-                    IconButton(onClick = { /* TODO: 지도 이동 */ }) {
-                        Icon(Icons.Default.Map, contentDescription = "지도 보기")
-                    }
-                    IconButton(onClick = { showDeleteDialog = true }) {
-                        Icon(Icons.Default.Delete, contentDescription = "삭제")
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(paddingValues),
-//            contentPadding = PaddingValues(
-//                top = paddingValues.calculateTopPadding(),
-//                bottom = paddingValues.calculateBottomPadding()
-//            )
-        ) {
-            item {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = plan.title,
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "편집",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray,
-                            modifier = Modifier.clickable { isEditOptionSheetOpen = true }
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "${plan.startedDate} ~ ${plan.endDate}",
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "총 일정 ${plan.schedules.size}개 / ₩${plan.schedules.sumOf { it.cost ?: 0 }}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-
-            dayDateList.forEach { (day, dateText) ->
-                item {
-                    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                        Text(
-                            text = "Day $day - $dateText",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-
-                        val schedules = plan.schedules.filter { it.day == day }
-                        schedules.forEach { schedule ->
-                            ScheduleItem(
-                                schedule = schedule,
-                                onScheduleClicked = { selectedSchedule = schedule }
-                            )
-                        }
-
-                        OutlinedButton(
-                            onClick = {
-                                selectedDay = day
-                                isAddLocationModalOpen = true
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 12.dp),
-                            shape = RoundedCornerShape(10.dp)
-                        ) {
-                            Text("장소 추가")
-                        }
-                    }
-                }
-            }
-        }
-
-        if (isAddLocationModalOpen) {
-            ModalBottomSheet(
-                sheetState = addLocationSheetState,
-                onDismissRequest = { isAddLocationModalOpen = false },
-                containerColor = Color.White,
-            ) {
-                AddScheduleBottomSheet(
-                    selectedDay = selectedDay,
-                    onSave = { desc, cost, memo, time ->
-                        planDetailViewModel.addSchedule(
-                            description = desc,
-                            time = time,
-                            day = selectedDay,
-                            cost = cost,
-                            memo = memo,
-                            planId = plan.id
-                        )
-                        isAddLocationModalOpen = false
-                    },
-                    onCancel = { isAddLocationModalOpen = false }
-                )
-            }
-        }
-    }
+        onDismiss = { isEditTitleDialogOpen = false })
 }
 
-
+// 이미지 리소스 여행지 매핑 함수
+fun getImageForDestination(destination: String): Int {
+    return when (destination) {
+        "제주도" -> R.drawable.jeju
+        "부산" -> R.drawable.busan
+        "강릉" -> R.drawable.gangneung
+        "경주" -> R.drawable.gyeongju
+        "여수" -> R.drawable.yeosu
+        "일본" -> R.drawable.japan
+        "몽골" -> R.drawable.mongolia
+        "상하이" -> R.drawable.shanghai
+        "필리핀" -> R.drawable.philippines
+        else -> R.drawable.travel_icon // 기본 이미지 리소스 설정 필요
+    }
+}

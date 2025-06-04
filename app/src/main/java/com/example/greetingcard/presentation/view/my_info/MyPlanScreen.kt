@@ -203,7 +203,7 @@ fun PlanCard(
         ) {
             // 썸네일 이미지 (고정 or 서버에서 받아오기)
             Image(
-                painter = painterResource(R.drawable.japan),
+                painter = painterResource(id = getImageForDestination(plan.destination)),
                 contentDescription = "Plan thumbnail",
                 modifier = Modifier
                     .size(48.dp)
@@ -255,5 +255,21 @@ fun PlanCard(
                 }
             }
         }
+    }
+}
+
+// 이미지 리소스 여행지 매핑 함수
+fun getImageForDestination(destination: String): Int {
+    return when (destination) {
+        "제주도" -> R.drawable.jeju
+        "부산" -> R.drawable.busan
+        "강릉" -> R.drawable.gangneung
+        "경주" -> R.drawable.gyeongju
+        "여수" -> R.drawable.yeosu
+        "일본" -> R.drawable.japan
+        "몽골" -> R.drawable.mongolia
+        "상하이" -> R.drawable.shanghai
+        "필리핀" -> R.drawable.philippines
+        else -> R.drawable.travel_icon // 기본 이미지 리소스 설정 필요
     }
 }
