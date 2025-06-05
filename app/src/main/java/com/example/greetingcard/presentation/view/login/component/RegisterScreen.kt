@@ -1,6 +1,8 @@
 package com.example.greetingcard.presentation.view.login.component
 
 import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -43,7 +45,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.greetingcard.presentation.viewModel.login.AuthViewModel
 
 @Composable
-fun LoginJoin(
+fun RegisterScreen(
     navController: NavController,
     authViewModel: AuthViewModel
 ) {
@@ -144,12 +146,28 @@ fun LoginJoin(
 
         Button(
             onClick = {
+                Log.d(
+                    "RegisterScreen",
+                    "회원가입 시도: 아이디=$userId, 비밀번호=$password, 이름=$name, 이메일=$email, 프로필 이미지=${profileImageUri?.toString()}"
+                )
                 // 회원가입 로직 처리
-                authViewModel.signUp(
-                    userId, password, name, email, profileImageUri,
-                    onSuccess = { navController.navigate("home") },
-                    onFailure = { message ->
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                authViewModel.register(
+                    email = email,
+                    password = password,
+                    name = name,
+                    defaultProfilePic = profileImageUri?.toString() ?: "",
+                    onSuccess = {
+                        // 회원가입 성공 후 처리
+                        navController.navigate("login") {
+                            popUpTo("register") { inclusive = true }
+                        }
+                        Toast.makeText(context, "회원가입 성공", Toast.LENGTH_SHORT).show()
+                    },
+                    onFailure = { error ->
+                        // 회원가입 실패 처리
+                        // 예: Toast 메시지 표시
+                        println("회원가입 실패: $error")
+                        Toast.makeText(context, "회원가입 실패: $error", Toast.LENGTH_SHORT).show()
                     }
                 )
             },

@@ -8,8 +8,13 @@ import com.example.greetingcard.data.repository.plan.PlanRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 /**
  * 플랜 목록(요약 정보) 화면 전용 ViewModel
@@ -26,6 +31,25 @@ class PlanPreviewViewModel @Inject constructor(
     // 플랜 요약 리스트 상태 저장
     private val _planPreviews = MutableStateFlow<List<PlanPreview>>(emptyList())
     val planPreviews: StateFlow<List<PlanPreview>> = _planPreviews
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd") // 실제 포맷에 맞게 수정
+
+    val nearestPlan: StateFlow<PlanPreview?> = _planPreviews
+        .map { plans ->
+            plans
+                .filter {
+                    try {
+                        val date = LocalDate.parse(it.startedDate, dateFormatter)
+                        date.isAfter(LocalDate.now())
+                    } catch (e: Exception) {
+                        false // 날짜 파싱 실패 시 제외
+                    }
+                }
+                .sortedBy {
+                    LocalDate.parse(it.startedDate, dateFormatter)
+                }
+                .firstOrNull()
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     // 로딩 상태
     private val _isLoading = MutableStateFlow(false)

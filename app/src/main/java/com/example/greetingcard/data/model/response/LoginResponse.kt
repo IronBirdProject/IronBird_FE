@@ -6,5 +6,12 @@ data class LoginResponse(
     val accessTokenExpiresIn: Long,
     val refreshToken: String,
     val refreshTokenExpiresIn: Long,
+    val user: UserInfo // ← 추가
 )
 
+data class UserInfo(
+    val email: String,
+    val name: String,
+    val oauthId: String?,
+    val profilePic: String
+)

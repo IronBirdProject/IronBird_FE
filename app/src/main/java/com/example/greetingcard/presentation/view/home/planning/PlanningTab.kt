@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,10 +47,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.greetingcard.R
+import com.example.greetingcard.presentation.viewModel.user.UserViewModel
 
 
 @Composable
-fun PlanningScreen(navController: NavController, listState: LazyListState) {
+fun PlanningScreen(
+    navController: NavController, listState: LazyListState, userViewModel: UserViewModel
+) {
+    val user by userViewModel.userInfo.collectAsState()
+
     LazyColumn(
         state = listState,
         modifier = Modifier
@@ -68,7 +74,7 @@ fun PlanningScreen(navController: NavController, listState: LazyListState) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     AsyncImage(
-                        model = "", // 프로필 이미지 URL
+                        model = user?.profilePic,
                         error = painterResource(R.drawable.user_profile),
                         contentDescription = "프로필",
                         modifier = Modifier
@@ -78,7 +84,7 @@ fun PlanningScreen(navController: NavController, listState: LazyListState) {
                     )
                     Spacer(Modifier.width(12.dp))
                     Column {
-                        Text("김수현 님 👋", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                        Text("${user?.name}님 👋", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                         Text("초보 여행자", color = Color.Gray, fontSize = 14.sp)
                     }
                 }
@@ -98,8 +104,7 @@ fun PlanningScreen(navController: NavController, listState: LazyListState) {
             UserInfoCard(
                 onUserProfileClicked = { /* 마이페이지 이동 */ },
                 onPlanClicked = { navController.navigate("my_plan") },
-                onPostingClicked = { /* 포스팅으로 이동 */ }
-            )
+                onPostingClicked = { /* 포스팅으로 이동 */ })
         }
 
         item {
@@ -163,8 +168,7 @@ fun SearchBar() {
                             .size(20.dp)
                             .clickable {
                                 text = ""
-                            }
-                    )
+                            })
                 }
             },
             colors = TextFieldDefaults.colors(

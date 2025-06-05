@@ -1,11 +1,12 @@
 package com.example.greetingcard.presentation.navigation
 
 sealed class Screen(val route: String) {
+    object Splash : Screen(route = "splash_screen")
+
     object Login : Screen(route = "login")
     object LoginFinder : Screen(route = "loginFinder/{viewType}")
     object LoginJoin : Screen(route = "loginJoin")
 
-    object Splash : Screen(route = "splash_screen")
     object Home : Screen(route = "home")
 
     object PlanCreate : Screen(route = "plan_create")
@@ -16,7 +17,7 @@ sealed class Screen(val route: String) {
     object CreatePost : Screen(route = "create_post")
 
     object MyPlan : Screen(route = "my_plan") // 내 플랜 스크린
-    object DetailPlan : Screen(route = "detail_plan/{id}")
+    object PlanDetail : Screen(route = "plan_detail/{id}")
 
     object MapTest : Screen(route = "map_test")
 }

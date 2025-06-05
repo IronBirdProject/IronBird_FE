@@ -7,12 +7,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.greetingcard.presentation.navigation.PlanCreateNavGraph
 import com.example.greetingcard.presentation.navigation.Screen
+import com.example.greetingcard.presentation.view.SplashScreen
 import com.example.greetingcard.presentation.view.home.HomePage
 import com.example.greetingcard.presentation.view.home.planning.MapTestScreen
 import com.example.greetingcard.presentation.view.home.posting.CreatePostPage
 import com.example.greetingcard.presentation.view.login.component.Login
 import com.example.greetingcard.presentation.view.login.component.LoginFinder
-import com.example.greetingcard.presentation.view.login.component.LoginJoin
+import com.example.greetingcard.presentation.view.login.component.RegisterScreen
 import com.example.greetingcard.presentation.view.my_info.MyPlanScreen
 import com.example.greetingcard.presentation.view.plan.plandetail.PlanDetailScreen
 import com.example.greetingcard.presentation.viewModel.home.HomeViewModel
@@ -20,14 +21,20 @@ import com.example.greetingcard.presentation.viewModel.home.PostViewModel
 import com.example.greetingcard.presentation.viewModel.login.AuthViewModel
 import com.example.greetingcard.presentation.viewModel.plan.PlanPreviewViewModel
 import com.example.greetingcard.presentation.viewModel.plan.plandetail.PlanDetailViewModel
+import com.example.greetingcard.presentation.viewModel.user.UserViewModel
 
 @Composable
 fun SetUpNavGraph(
     navController: NavHostController,
 ) {
     NavHost(
-        navController = navController, startDestination = Screen.Login.route
+        navController = navController, startDestination = Screen.Splash.route
     ) {
+        composable(Screen.Splash.route) {
+            val userViewModel: UserViewModel = hiltViewModel()
+            SplashScreen(navController = navController, userViewModel = userViewModel)
+        }
+
         composable(Screen.Login.route) {
             val authViewModel: AuthViewModel = hiltViewModel()
             Login(navController = navController, authViewModel = authViewModel)
@@ -38,11 +45,18 @@ fun SetUpNavGraph(
         }
         composable(Screen.LoginJoin.route) {
             val authViewModel: AuthViewModel = hiltViewModel()
-            LoginJoin(navController = navController, authViewModel = authViewModel)
+            RegisterScreen(navController = navController, authViewModel = authViewModel)
         }
         composable(Screen.Home.route) {
             val homeViewModel: HomeViewModel = hiltViewModel()
-            HomePage(navController = navController, homeViewModel = homeViewModel)
+            val userViewModel: UserViewModel = hiltViewModel()
+            val planPreviewViewModel: PlanPreviewViewModel = hiltViewModel()
+            HomePage(
+                navController = navController,
+                homeViewModel = homeViewModel,
+                userViewModel = userViewModel,
+                planPreviewViewModel = planPreviewViewModel
+            )
         }
 //        composable(Screen.Calender.route) {
 //            val planCreateViewModel: PlanCreateViewModel = viewModel()
@@ -74,7 +88,7 @@ fun SetUpNavGraph(
         }
         // 플랜 상세 화면
         composable(
-            Screen.DetailPlan.route,
+            Screen.PlanDetail.route,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { backStackEntry ->
             val planDetailViewModel: PlanDetailViewModel = hiltViewModel()
