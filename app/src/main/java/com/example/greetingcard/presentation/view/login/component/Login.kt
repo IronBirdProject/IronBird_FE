@@ -1,19 +1,30 @@
 package com.example.greetingcard.presentation.view.login.component
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,12 +41,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.greetingcard.R
 import com.example.greetingcard.presentation.viewModel.login.AuthViewModel
 
 @Composable
@@ -59,17 +73,38 @@ fun Login(
         .padding(start = 20.dp, end = 20.dp)
 
     val textFieldColors = OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-    )
+        focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
 
-    ButtonDefaults.buttonColors(Color(0xFF87CEEB))
+        )
+
+//    ButtonDefaults.buttonColors(Color(0xFF87CEEB))
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .statusBarsPadding()
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 40.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        // 로그인 폼
-        LoginTitle("철새")
+//        Test(
+//            onClick = {
+//                navController.navigate("home")
+//            }
+//        )
+//        Spacer(Modifier.height(100.dp))
+        Box {
+            Image(
+                painter = painterResource(id = R.drawable.app_logo),
+                contentDescription = "App Logo",
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth(0.4f),
+                contentScale = ContentScale.Fit
+            )
+        }
 
         LoginForm(
             userInput = userInput,
@@ -82,11 +117,14 @@ fun Login(
             paddingModifier = paddingModifier
         )
 
-        LoginCheckBox(
-            checkboxStatus,
-            onCheckedValue = { checkboxStatus = it }
-        )
+        Spacer(Modifier.height(10.dp))
 
+        // 아이디, 비밀번호 찾기 버튼
+        LoginActionRow(navController)
+
+        Spacer(Modifier.height(20.dp))
+
+        // 로그인 버튼
         LoginButtonContainer(
             navController = navController,
             userInput = userInput,
@@ -94,7 +132,93 @@ fun Login(
             authViewModel = authViewModel
         )
 
-        LoginActionRow(navController)
+        Spacer(Modifier.height(20.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            HorizontalDivider(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .weight(1f),
+                color = Color(0xff575757).copy(alpha = 0.1f),
+                thickness = 1.dp
+            )
+            Text(
+                "계정이 없으세요?",
+                color = Color(0xff575757).copy(alpha = 0.8f),
+                fontSize = 13.sp
+            )
+            HorizontalDivider(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .weight(1f),
+                color = Color(0xff575757).copy(alpha = 0.1f),
+                thickness = 1.dp
+            )
+        }
+
+        Spacer(Modifier.height(20.dp))
+
+        // 회원가입 파트
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            LoginPageButton(
+                modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(Color.White),
+                text = "Sign Up",
+                textColor = Color(0xff575757).copy(alpha = 0.6f),
+                textSize = 17,
+                border = BorderStroke(
+                    width = 0.7.dp,
+                    color = Color(0xff575757).copy(alpha = 0.5f)
+                ),
+                onClickLoginBtn = {
+                    navController.navigate("loginJoin")
+                }
+            )
+            Button(
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .height(75.dp)
+                    .width(75.dp),
+                colors = ButtonDefaults.buttonColors(Color.White),
+//                    border = BorderStroke(
+//                        width = 1.dp,
+//                        Color(0xff575757).copy(alpha = 0.1f)
+//                    ),
+                shape = RoundedCornerShape(50.dp),
+                onClick = {
+                    authViewModel.login(
+                        username = userInput,
+                        password = passwordInput,
+                        onSuccess = {
+                            navController.navigate("home")
+                        },
+                        onFailure = { message ->
+                            // 로그인 실패 처리
+                            // 예: Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            ) {
+                Image(
+                    modifier = Modifier
+                        .width(55.dp)
+                        .height(55.dp),
+                    painter = painterResource(id = R.drawable.kakao_logo), // 예: 카카오톡 아이콘
+                    contentDescription = "Kakao Login",
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+        }
     }
 }
 
@@ -110,41 +234,35 @@ fun LoginForm(
     paddingModifier: Modifier
 ) {
     OutlinedTextField(
+        label = { Text("e-mail") },
         value = userInput,
         onValueChange = onUserInputChange,
-        placeholder = {
-            Text(
-                text = "이메일 또는 아이디",
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-            )
-        },
         singleLine = true,
-        modifier = paddingModifier.padding(top = 30.dp),
-        colors = textFieldColors
-    )
+        modifier = paddingModifier
+            .padding(top = 30.dp)
+            .height(70.dp),
+        colors = textFieldColors,
+        shape = RoundedCornerShape(50),
+
+        )
 
     OutlinedTextField(
+        label = { Text("비밀번호") },
         value = passwordInput,
-        onValueChange = onPasswordInputChange,
-        placeholder = {
-            Text(
-                text = "패스워드",
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-            )
-        },
+        onValueChange = { onPasswordInputChange(it) },
         maxLines = 1,
-        modifier = paddingModifier.padding(top = 12.dp),
-        leadingIcon = {
-            Icon(imageVector = Icons.Default.Lock, contentDescription = null)
-        },
+        modifier = paddingModifier
+            .padding(top = 5.dp)
+            .height(70.dp),
         trailingIcon = {
             IconButton(onClick = onPasswordVisibilityToggle) {
-                Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                Icon(imageVector = Icons.Default.RemoveRedEye, contentDescription = null)
             }
         },
         visualTransformation = if (shouldShowPwd) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        colors = textFieldColors
+        colors = textFieldColors,
+        shape = RoundedCornerShape(50),
     )
 }
 
@@ -167,7 +285,7 @@ fun LoginCheckBox(
                 checkedColor = Color(0xFF87CEEB)
             ),
             onCheckedChange = {
-                onCheckedValue
+                onCheckedValue(it)
             }
         )
         Text(
@@ -186,32 +304,37 @@ fun LoginActionRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 30.dp)
-            .padding(start = 20.dp, end = 20.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
+            .padding(horizontal = 25.dp),
+        horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
     ) {
+//        Text(
+//            text = "회원가입",
+//            modifier = Modifier.clickable {
+//                navController.navigate("loginJoin")
+//            }
+//        )
+//        VerticalDivider(
+//            color = MaterialTheme.colorScheme.secondary,
+//            modifier = Modifier.height(25.dp)
+//        )
         Text(
-            text = "회원가입",
-            modifier = Modifier.clickable {
-                navController.navigate("loginJoin")
-            }
-        )
-        VerticalDivider(
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.height(25.dp)
-        )
-        Text(
+            fontSize = 13.sp,
+            color = Color(0xff595959),
             text = "아이디 찾기",
             modifier = Modifier.clickable {
                 navController.navigate("loginFInder/findId")
             })
+        Spacer(modifier = Modifier.width(10.dp))
         VerticalDivider(
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.height(25.dp)
+            color = Color(0xff595959),
+            modifier = Modifier.height(18.dp)
         )
+        Spacer(modifier = Modifier.width(10.dp))
         Text(
-            text = "비밀번호 재설정",
+            fontSize = 14.sp,
+            color = Color(0xff595959),
+            text = "비밀번호 찾기",
             modifier = Modifier.clickable {
                 navController.navigate("loginFinder/findPwd")
             })

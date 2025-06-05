@@ -2,13 +2,17 @@ package com.example.greetingcard.presentation.view.login.component
 
 import CustomAlertDialog
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,13 +47,16 @@ fun LoginButtonContainer(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 20.dp)
     ) {
         // 자체 로그인
-        LoginButton(
-            authViewModel = authViewModel,
-            userInput = userInput,
-            passwordInput = passwordInput,
+        LoginPageButton(
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(Color(0xff6ec4ee)),
+            text = "로그인",
+            textColor = Color.White,
+            textSize = 20,
+            border = null,
             onClickLoginBtn = {
                 authViewModel.login(
                     username = userInput,
@@ -63,16 +70,11 @@ fun LoginButtonContainer(
                     })
             })
 
-        KakaoButton(
-            kakaoViewModel = kakaoViewModel,
-            navController = navController,
-        )
+//        KakaoButton(
+//            kakaoViewModel = kakaoViewModel,
+//            navController = navController,
+//        )
 
-        Test(
-            onClick = {
-                // TODO: 임시 설정
-                navController.navigate("home")
-            })
 
     }
 }
@@ -83,47 +85,41 @@ fun Test(
 ) {
     Button(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(70.dp)
+            .width(100.dp)
+            .height(30.dp)
             .padding(top = 10.dp)
             .padding(start = 20.dp, end = 20.dp),
         colors = ButtonDefaults.buttonColors(Color.Black),
         shape = RoundedCornerShape(15.dp),
         onClick = { onClick() }) {
-        Text(
-            text = "홈으로 이동(임시)", fontSize = 20.sp, color = Color.White
-        )
+
     }
 }
 
 @Composable
-fun LoginButton(
-    authViewModel: AuthViewModel,
-    userInput: String,
-    passwordInput: String,
-    onClickLoginBtn: () -> Unit
-
+fun LoginPageButton(
+    modifier: Modifier = Modifier,
+    colors: ButtonColors,
+    onClickLoginBtn: () -> Unit,
+    text: String,
+    textColor: Color,
+    textSize: Int,
+    border: BorderStroke?
 ) {
-//    val loginViewModel: LoginViewModel = viewModel()
 
-    Button(
+    OutlinedButton(
         onClick = {
             onClickLoginBtn()
-//            loginViewModel.loginTest(UserDTO.from(userId = userInput, password = passwordInput))
-//            loginViewModel.login(
-//                username = userInput, password = passwordInput
-//            )
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(70.dp)
-            .padding(top = 10.dp)
-            .padding(start = 20.dp, end = 20.dp),
-        colors = ButtonDefaults.buttonColors(Color(0xFF87CEEB)),
-        shape = RoundedCornerShape(15.dp)
+        modifier
+//            .fillMaxWidth()
+            .height(75.dp),
+        colors = colors,
+        border = border,
+        shape = RoundedCornerShape(50)
     ) {
         Text(
-            text = "로그인", fontSize = 20.sp
+            text = text, fontSize = textSize.sp, color = textColor
         )
     }
 }

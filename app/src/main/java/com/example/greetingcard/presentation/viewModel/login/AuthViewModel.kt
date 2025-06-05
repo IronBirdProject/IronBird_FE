@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.greetingcard.data.model.dto.user.LoginDto
+import com.example.greetingcard.data.model.dto.user.UserDTO
 import com.example.greetingcard.data.model.response.LoginResponse
 import com.example.greetingcard.data.repository.user.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -63,50 +64,61 @@ class AuthViewModel @Inject constructor(
     }
 
 
-//    fun join(userDTO: UserDTO) {
-//        viewModelScope.launch {
-//            isLoading.value = true
-//            try {
-//                LoginClient.apiService.register(userDTO)
-//            } catch (e: Exception) {
-//                errorMessage.value = "Error: ${e.message}"
-//            } finally {
-//                isLoading.value = false
-//            }
-//        }
-//    }
-//
-//    fun loginTest(userDTO: UserDTO) {
-//        Log.d("userName", userDTO.toString())
-//        isLoading.value = true
-//        viewModelScope.launch {
-//            try {
-//                // loginTest 호출 (UserDTO를 전달)
-//                val loginResultTest = LoginClient.apiService.loginTest(userDTO)
-//
-//                Log.d("LoginTest", "Response: $loginResultTest")
-//
-//                // 응답이 성공적일 경우
-//                if (loginResultTest.isSuccessful) {
-//                    // 성공한 경우 로그인 결과 처리
-//                    loginResult.value = "Login Success: ${loginResultTest.body()?.toString()}"
-//                    Log.d("LoginTest", "Login successful: ${loginResultTest.body()}")
-//                } else {
-//                    // 실패한 경우 에러 처리
-//                    errorMessage.value = "Login Failed"
-//                    Log.e("LoginTest", "Login failed with code: ${loginResultTest.code()}")
-//                }
-//            } catch (e: Exception) {
-//                // 예외 발생 시 처리
-//                errorMessage.value = "Error: ${e.message}"
-//                Log.e("LoginTest", "Error occurred", e) // 예외 로그 출력
-//            } finally {
-//                // 로딩 상태 종료
-//                isLoading.value = false
-//                Log.d("LoginTest", "Loading finished") // 로딩 완료 로그 출력
-//            }
-//        }
-//    }
+    fun join(userDTO: UserDTO) {
+        viewModelScope.launch {
+            isLoading.value = true
+            try {
+                // 회원가입 API 호출
+                val response = authRepository.join(userDTO)
+
+                if (response.isSuccessful) {
+                    // 회원가입 성공
+                    loginResult.value = response.body()
+                    Log.d("AuthViewModel", "회원가입 성공: ${response.body()}")
+                } else {
+                    // 회원가입 실패
+                    errorMessage.value = "회원가입 실패: ${response.errorBody()?.string()}"
+                    Log.e("AuthViewModel", "회원가입 실패: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                errorMessage.value = "Error: ${e.message}"
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun loginTest(userDTO: UserDTO) {
+        Log.d("userName", userDTO.toString())
+        isLoading.value = true
+        viewModelScope.launch {
+            try {
+                // loginTest 호출 (UserDTO를 전달)
+                val loginResultTest = LoginClient.apiService.loginTest(userDTO)
+
+                Log.d("LoginTest", "Response: $loginResultTest")
+
+                // 응답이 성공적일 경우
+                if (loginResultTest.isSuccessful) {
+                    // 성공한 경우 로그인 결과 처리
+                    loginResult.value = "Login Success: ${loginResultTest.body()?.toString()}"
+                    Log.d("LoginTest", "Login successful: ${loginResultTest.body()}")
+                } else {
+                    // 실패한 경우 에러 처리
+                    errorMessage.value = "Login Failed"
+                    Log.e("LoginTest", "Login failed with code: ${loginResultTest.code()}")
+                }
+            } catch (e: Exception) {
+                // 예외 발생 시 처리
+                errorMessage.value = "Error: ${e.message}"
+                Log.e("LoginTest", "Error occurred", e) // 예외 로그 출력
+            } finally {
+                // 로딩 상태 종료
+                isLoading.value = false
+                Log.d("LoginTest", "Loading finished") // 로딩 완료 로그 출력
+            }
+        }
+    }
 
 
 }

@@ -37,7 +37,8 @@ fun SetUpNavGraph(
             LoginFinder(navController = navController, viewType = viewType)
         }
         composable(Screen.LoginJoin.route) {
-            LoginJoin(navController = navController)
+            val authViewModel: AuthViewModel = hiltViewModel()
+            LoginJoin(navController = navController, authViewModel = authViewModel)
         }
         composable(Screen.Home.route) {
             val homeViewModel: HomeViewModel = hiltViewModel()
