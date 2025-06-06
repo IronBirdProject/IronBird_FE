@@ -25,10 +25,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.greetingcard.R
 
 @Composable
-fun FeaturesGrid() {
+fun FeaturesGrid(navController: NavController) {
     val cardSize = (LocalConfiguration.current.screenWidthDp.dp - 60.dp) / 2
 
     Row(
@@ -39,35 +40,36 @@ fun FeaturesGrid() {
     ) {
         FeatureCard(
             width = cardSize,
-            title = "내 항공권",
-            description = "예약한 항공권 보기",
-            img = R.drawable.ticket_icon
+            title = "여행 탐색",
+            description = "인기 여행지 보기",
+            img = R.drawable.travel_icon,
+            onClick = { navController.navigate("explore") }
         )
 
         FeatureCard(
             width = cardSize,
-            title = "탐색하기",
-            description = "인기 여행지 보기",
-            img = R.drawable.travel_icon
+            title = "환전 도우미",
+            description = "여행지 환율 계산",
+            img = R.drawable.map_img,
+            onClick = { navController.navigate("exchange") }
         )
     }
 }
 
-
-// body 부분 그리드 리스트의 아이템
 @Composable
 fun FeatureCard(
     width: Dp,
     title: String,
     description: String,
-    img: Int
+    img: Int,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .width(width)
             .aspectRatio(1f)
             .clip(RoundedCornerShape(16.dp))
-            .clickable { /* TODO */ },
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = Color(0xfff5f5f5))
     ) {
         Column(
@@ -83,7 +85,7 @@ fun FeatureCard(
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 Image(
                     painter = painterResource(id = img),
-                    contentDescription = "icon",
+                    contentDescription = null,
                     modifier = Modifier.size(48.dp)
                 )
             }
