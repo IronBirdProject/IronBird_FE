@@ -10,6 +10,7 @@ data class LoginResponse(
 )
 
 data class UserInfo(
+    val id: Int,
     val email: String,
     val name: String,
     val oauthId: String?,

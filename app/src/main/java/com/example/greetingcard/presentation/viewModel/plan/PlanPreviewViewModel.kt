@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.greetingcard.data.model.response.PlanPreview
 import com.example.greetingcard.data.repository.plan.PlanRepository
+import com.example.greetingcard.data.source.local.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,11 +23,24 @@ import java.time.format.DateTimeFormatter
  */
 @HiltViewModel
 class PlanPreviewViewModel @Inject constructor(
-    private val repository: PlanRepository
+    private val repository: PlanRepository,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    // 플랜 목록을 불러오기 위한 Repository
-//    private val repository: PlanRepository = PlanRepository()
+    private val _userId = MutableStateFlow<Int?>(null)
+
+    init {
+        viewModelScope.launch {
+            sessionManager.userInfoFlow.collect { user ->
+                Log.d("PlanPreviewViewModel", "세션에서 유저 정보 수집: ${user.id}, ${user.name}")
+                if (user.id != 0) {
+                    _userId.value = user.id
+                    loadPlanPreviews() // ✅ 여기서 바로 호출!
+                }
+            }
+        }
+    }
+
 
     // 플랜 요약 리스트 상태 저장
     private val _planPreviews = MutableStateFlow<List<PlanPreview>>(emptyList())
@@ -63,26 +77,25 @@ class PlanPreviewViewModel @Inject constructor(
      * 특정 유저의 플랜 목록을 서버에서 불러오는 함수
      * @param userId 유저 식별자
      */
-    fun loadPlanPreviews(userId: Int) {
+    fun loadPlanPreviews() {
+        val uid = _userId.value
+        if (uid == null || uid == 0) {
+            _error.value = "유효한 유저 ID 없음"
+            return
+        }
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                Log.d(
-                    "플랜 목록 불러오기",
-                    "유저 ID: $userId, 로딩 시작"
-                )
-                val res = repository.getPlansByUserId(userId)
+                Log.d("플랜 목록 불러오기", "유저 ID: $uid, 로딩 시작")
+                val res = repository.getPlansByUserId(uid)
                 if (res.isSuccessful) {
                     _planPreviews.value = res.body() ?: emptyList()
                     _error.value = null
-                    Log.d("플랜 목록 불러오기 성공", planPreviews.value.toString())
                 } else {
                     _error.value = "오류 코드: ${res.code()}"
-                    Log.e("플랜 목록 불러오기 실패", "오류 코드: ${res.code()}")
                 }
             } catch (e: Exception) {
                 _error.value = e.localizedMessage
-                Log.e("플랜 목록 불러오기 예외", e.toString())
             } finally {
                 _isLoading.value = false
             }
@@ -98,7 +111,7 @@ class PlanPreviewViewModel @Inject constructor(
             try {
                 val response = repository.deletePlan(planId)
                 if (response.isSuccessful) {
-                    loadPlanPreviews(userId = 1)
+                    loadPlanPreviews()
                     onSuccess()
                 } else {
                     onFailure("삭제 실패: ${response.code()}")

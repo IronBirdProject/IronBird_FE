@@ -1,6 +1,7 @@
 package com.example.greetingcard.presentation.view.home
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,9 +39,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.greetingcard.R
-import com.example.greetingcard.data.model.response.PlanPreview
 import com.example.greetingcard.presentation.view.home.planning.PlanningScreen
 import com.example.greetingcard.presentation.view.home.posting.PostingTab
 import com.example.greetingcard.presentation.viewModel.home.HomeViewModel
@@ -62,11 +63,12 @@ fun HomePage(
     val listStates = List(homeViewModel.tabs.size) { rememberLazyListState() }
 
     // 가장 가까운 여행 일정 가져오기
-    val upcomingPlan by planPreviewViewModel.nearestPlan.collectAsState()
+//    val upcomingPlan by planPreviewViewModel.nearestPlan.collectAsState()
 
     LaunchedEffect(Unit) {
-        planPreviewViewModel.loadPlanPreviews(userId = 1) // TODO: 실제 로그인 유저 ID로 변경
-        Log.d("HomePage", "예정된 여행 ${upcomingPlan.toString()}")
+        userViewModel.userInfo
+        planPreviewViewModel.loadPlanPreviews() // TODO: 실제 로그인 유저 ID로 변경
+//        Log.d("HomePage", "예정된 여행 ${upcomingPlan.toString()}")
     }
 
     // 안전하게 최초 실행 시 한번만 호출
@@ -76,21 +78,35 @@ fun HomePage(
 
         // 상단 바
         topBar = {
-            CustomAppBar(homeViewModel, navController, listStates[homeViewModel.selectedTabIndex])
+            CustomAppBar(
+                homeViewModel,
+                navController,
+                listStates[homeViewModel.selectedTabIndex],
+                onClickLogout = {
+                    userViewModel.clearSession(onSuccess = {
+                        Log.d("HomePage", "로그아웃 성공")
+                        navController.navigate("login") {
+                            popUpTo("home") { inclusive = true }
+                        }
+                        Toast.makeText(
+                            navController.context, "로그아웃 되었습니다.", Toast.LENGTH_SHORT
+                        ).show()
+                    }, onFailure = { error ->
+                        Log.e("HomePage", "로그아웃 실패: $error")
+                        Toast.makeText(
+                            navController.context, error, Toast.LENGTH_SHORT
+                        ).show()
+                    })
+                })
         },
 
         // 플로팅 버튼
         floatingActionButton = {
-            // TODO: 추후 포스팅 탭에서 가장 가까운 여행 일정 페이지로 이동하는 플로팅 버튼 생성 예정
             if (homeViewModel.selectedTabIndex == 0) {
                 PlanUpcomingFloatingButton(
-                    plan = upcomingPlan, onClick = {
-                        if (upcomingPlan != null) {
-                            navController.navigate("plan_detail/${upcomingPlan!!.id}") {
-                                launchSingleTop = true
-                            }
-                        }
-                    }, modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
+                    planPreviewViewModel = planPreviewViewModel,
+                    navController = navController
                 )
             }
         },
@@ -115,53 +131,21 @@ fun HomePage(
     }
 }
 
-
-// 플로팅 버튼 (플랜 추가 페이지 이동 버튼)
-//@Composable
-//fun CreatePlanFloatingButton(onClick: () -> Unit) {
-//    ExtendedFloatingActionButton(
-//        modifier = Modifier
-//            .padding(horizontal = 40.dp, vertical = 16.dp)
-//            .fillMaxWidth()
-//            .height(60.dp),
-//        elevation = FloatingActionButtonDefaults.elevation(
-//            defaultElevation = 2.dp
-//        ),
-//        containerColor = Color(0xFFD4ECF7),
-//        shape = CircleShape,
-//        onClick = { onClick() },
-//        icon = {},
-//        text = {
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(horizontal = 0.dp),
-//                horizontalArrangement = Arrangement.SpaceBetween,
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Text(text = "여행 일정 만들기", fontSize = 16.sp)
-//                Icon(
-//                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
-//                    tint = Color.Gray,
-//                    contentDescription = "일정 만들기 FAB"
-//                )
-//            }
-//        },
-//    )
-//}
-
+// 예정된 여행 일정 플로팅 버튼
 @Composable
 fun PlanUpcomingFloatingButton(
     modifier: Modifier = Modifier,
-    plan: PlanPreview?,
-    onClick: () -> Unit
+    planPreviewViewModel: PlanPreviewViewModel,
+    navController: NavController
 ) {
+    // 가장 가까운 여행 일정 가져오기
+    val plan by planPreviewViewModel.nearestPlan.collectAsState()
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .clip(RoundedCornerShape(20.dp))
-            .clickable { onClick() },
+            .clickable { navController.navigate("plan_detail/${plan?.id}") },
         color = Color.Transparent, // Surface 자체는 투명하게
         shadowElevation = 6.dp,
     ) {
@@ -170,8 +154,7 @@ fun PlanUpcomingFloatingButton(
                 .background(
                     brush = Brush.horizontalGradient(
                         listOf(Color(0xFF00D4C5), Color(0xFF0FBEE9))
-                    ),
-                    shape = RoundedCornerShape(20.dp)
+                    ), shape = RoundedCornerShape(20.dp)
                 )
                 .padding(horizontal = 20.dp, vertical = 14.dp)
         ) {
@@ -202,15 +185,11 @@ fun PlanUpcomingFloatingButton(
                         color = Color.White
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = plan?.let {
-                            val dDay = calculateDDay(it.startedDate)
-                            val period = formatDateRange(it.startedDate, it.endDate)
-                            "D-$dDay | $period"
-                        } ?: "날짜 정보 없음",
-                        fontSize = 13.sp,
-                        color = Color.White
-                    )
+                    Text(text = plan?.let {
+                        val dDay = calculateDDay(it.startedDate)
+                        val period = formatDateRange(it.startedDate, it.endDate)
+                        "D-$dDay | $period"
+                    } ?: "날짜 정보 없음", fontSize = 13.sp, color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -223,9 +202,7 @@ fun PlanUpcomingFloatingButton(
                         modifier = Modifier.size(24.dp)
                     )
                     Text(
-                        text = "내 일정",
-                        fontSize = 12.sp,
-                        color = Color.White
+                        text = "내 일정", fontSize = 12.sp, color = Color.White
                     )
                 }
             }

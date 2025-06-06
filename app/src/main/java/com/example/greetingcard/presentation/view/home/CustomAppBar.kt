@@ -41,9 +41,10 @@ import com.example.greetingcard.presentation.viewModel.home.HomeViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomAppBar(
-    homeViewModel: HomeViewModel = viewModel(),
+    homeViewModel: HomeViewModel,
     navController: NavHostController,
     listState: LazyListState,
+    onClickLogout: () -> Unit
 ) {
     // 탭 목록
     val tabs = homeViewModel.tabs
@@ -117,7 +118,7 @@ fun CustomAppBar(
                 contentDescription = "add_post",
                 tint = Color.Black,
             )
-            CustomDropDownMenu(homeViewModel, navController = navController)
+            CustomDropDownMenu(homeViewModel, onClickLogout = { onClickLogout() })
         }
     )
 }
@@ -127,7 +128,7 @@ fun CustomAppBar(
 @Composable
 fun CustomDropDownMenu(
     homeViewModel: HomeViewModel = viewModel(),
-    navController: NavHostController
+    onClickLogout: () -> Unit
 ) {
     Box {
         IconButton(onClick = {
@@ -143,8 +144,8 @@ fun CustomDropDownMenu(
             modifier = Modifier.background(Color.White)
         ) {
             DropdownMenuItem(
-                text = { Text("설정") },
-                onClick = { } // TODO: 추후 페이지 이동
+                text = { Text("로그아웃") },
+                onClick = { onClickLogout() }
             )
             DropdownMenuItem(
                 text = { Text("기타") },

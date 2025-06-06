@@ -71,7 +71,7 @@ fun MyPlanScreen(navController: NavController, planPreviewViewModel: PlanPreview
     var deleteTargetPlanId by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(Unit) {
-        planPreviewViewModel.loadPlanPreviews(userId = 1) // 로그인 유저 ID
+        planPreviewViewModel.loadPlanPreviews() // 로그인 유저 ID
     }
 
     Scaffold(
@@ -124,7 +124,7 @@ fun MyPlanScreen(navController: NavController, planPreviewViewModel: PlanPreview
                     PlanCard(
                         plan = preview,
                         onClick = {
-                            navController.navigate("detail_plan/${preview.id}")
+                            navController.navigate("plan_detail/${preview.id}")
                         },
                         onEdit = {
                             // 수정 로직 (예: 다이얼로그 열기)
