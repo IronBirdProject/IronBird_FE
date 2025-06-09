@@ -190,6 +190,7 @@ fun PlanCard(
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
+            .height(100.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
@@ -198,7 +199,7 @@ fun PlanCard(
         Row(
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxWidth(),
+                .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 썸네일 이미지 (고정 or 서버에서 받아오기)

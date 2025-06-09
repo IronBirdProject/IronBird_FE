@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -45,7 +46,6 @@ fun AddScheduleBottomSheet(
     onSave: (desc: String, cost: Int, memo: String, time: String) -> Unit,
     onCancel: () -> Unit
 ) {
-//    var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var cost by remember { mutableStateOf(0) }
     var memo by remember { mutableStateOf("") }
@@ -60,33 +60,25 @@ fun AddScheduleBottomSheet(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+//            .fillMaxHeight()
             .background(Color.White, shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-            .padding(horizontal = 24.dp, vertical = 32.dp)
+            .padding(horizontal = 24.dp)
+
     ) {
-        // 상단 헤드라인
         Text(
             text = "DAY $selectedDay",
             style = MaterialTheme.typography.labelMedium,
             color = Color.Gray
         )
+
         Text(
-            text = "장소 추가",
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
+            text = "할 일",
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(top = 4.dp, bottom = 24.dp)
         )
 
-//        // 필드 입력 섹션
-//        LabeledInputField(label = "제목") {
-//            AppleStyleInputField(
-//                value = title,
-//                onValueChange = { title = it },
-//                placeholder = "예: 미마루 호텔 체크인"
-//            )
-//        }
-
         LabeledInputField(label = "설명") {
-            AddScheduleInfoInputField(
+            RoundedGrayInputField(
                 value = description,
                 onValueChange = { description = it },
                 placeholder = "장소 설명"
@@ -94,11 +86,9 @@ fun AddScheduleBottomSheet(
         }
 
         LabeledInputField(label = "필요 금액") {
-            AddScheduleInfoInputField(
-                value = cost.toString(),
-                onValueChange = {
-                    cost = it.toIntOrNull() ?: 0
-                },
+            RoundedGrayInputField(
+                value = if (cost == 0) "" else cost.toString(),
+                onValueChange = { cost = it.toIntOrNull() ?: 0 },
                 placeholder = "예: 20000",
                 keyboardType = KeyboardType.Number
             )
@@ -110,7 +100,7 @@ fun AddScheduleBottomSheet(
                     .fillMaxWidth()
                     .height(56.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFF2F2F7))
+                    .background(Color(0xFFF5F5F5))
                     .clickable { timePickerDialog.show() }
                     .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.CenterStart
@@ -124,7 +114,7 @@ fun AddScheduleBottomSheet(
         }
 
         LabeledInputField(label = "메모") {
-            AddScheduleInfoInputField(
+            RoundedGrayInputField(
                 value = memo,
                 onValueChange = { memo = it },
                 placeholder = "필요시 간단한 메모 작성",
@@ -135,21 +125,25 @@ fun AddScheduleBottomSheet(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 버튼
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)
         ) {
             OutlinedButton(
-                onClick = { onCancel() },
-                shape = RoundedCornerShape(20.dp)
+                onClick = onCancel,
+                shape = RoundedCornerShape(20.dp),
+//                border = ButtonDefaults.outlinedBorder.copy(width = 1.dp, color = Color(0xFFBBBBBB))
             ) {
-                Text("취소")
+                Text("취소", color = Color(0xFF333333))
             }
 
             Button(
                 onClick = { onSave(description, cost, memo, time) },
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF1C1C1E),
+                    contentColor = Color.White
+                )
             ) {
                 Text("저장")
             }
@@ -157,12 +151,13 @@ fun AddScheduleBottomSheet(
     }
 }
 
+
 @Composable
 private fun LabeledInputField(label: String, content: @Composable () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp)
+//            .padding(bottom = 16.dp)
     ) {
         Text(
             text = label,
@@ -170,6 +165,40 @@ private fun LabeledInputField(label: String, content: @Composable () -> Unit) {
             modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
         )
         content()
+    }
+}
+
+@Composable
+fun RoundedGrayInputField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    singleLine: Boolean = true,
+    height: Dp = 56.dp
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height)
+            .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(12.dp))
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            textStyle = TextStyle(fontSize = 16.sp, color = Color.Black),
+            singleLine = singleLine,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType),
+            modifier = Modifier.fillMaxSize(),
+            decorationBox = { innerTextField ->
+                if (value.isEmpty()) {
+                    Text(text = placeholder, color = Color.Gray, fontSize = 16.sp)
+                }
+                innerTextField()
+            }
+        )
     }
 }
 

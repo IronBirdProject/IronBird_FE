@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.greetingcard.presentation.view.plan.createplan.CalendarScreen
 import com.example.greetingcard.presentation.view.plan.createplan.PlanTitleScreen
+import com.example.greetingcard.presentation.viewModel.plan.PlanPreviewViewModel
 import com.example.greetingcard.presentation.viewModel.plan.createplan.PlanCreateViewModel
 
 @Composable
@@ -49,10 +50,12 @@ fun PlanCreateNavGraph(
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Screen.Calender.route)
             }
+            val planPreviewViewModel: PlanPreviewViewModel = hiltViewModel()
             PlanTitleScreen(
                 navController = navController,
                 rootNavController = rootNavController,
-                planCreateViewModel = hiltViewModel(parentEntry)
+                planCreateViewModel = hiltViewModel(parentEntry),
+                planPreviewViewModel = planPreviewViewModel
             )
         }
 

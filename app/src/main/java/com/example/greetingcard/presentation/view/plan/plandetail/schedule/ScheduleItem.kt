@@ -3,6 +3,7 @@ package com.example.greetingcard.presentation.view.plan.plandetail.schedule
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,60 +39,79 @@ import com.example.greetingcard.data.model.response.Schedule
 /**
  * 스케쥴 아이템 컴포저블
  * */
+
 @Composable
 fun ScheduleItem(schedule: Schedule, onScheduleClicked: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = 10.dp)
+            .padding(horizontal = 10.dp)
     ) {
-        // 시간
-        Text(
-            textAlign = TextAlign.Center,
-            text = schedule.time,
-            modifier = Modifier.padding(start = 16.dp),
-            color = Color.Gray,
-            fontSize = 14.sp
-        )
+        Box(
+            modifier = Modifier
+                .padding(end = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = schedule.time,
+                textAlign = TextAlign.Center,
+                color = Color(0xFF888888),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
 
-        // 카드
+        // 스케쥴 카드
         Card(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .shadow(
                     elevation = 3.dp,
                     shape = RoundedCornerShape(12.dp),
                     ambientColor = Color.Black.copy(alpha = 0.05f),
-                    spotColor = Color.Black.copy(alpha = 0.4f)
+                    spotColor = Color.Black.copy(alpha = 0.7f)
                 )
-                .clickable {
-                    onScheduleClicked()
-                }, colors = CardDefaults.cardColors(containerColor = Color.White)
+                .clickable { onScheduleClicked() },
+            colors = CardDefaults.cardColors(containerColor = Color.White),
         ) {
             Column(
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier.padding(14.dp)
             ) {
-                Column {
-                    Text(text = schedule.description, fontWeight = FontWeight.Bold)
+                Text(
+                    text = schedule.description,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    color = Color(0xFF222222)
+                )
 
-                    schedule.memo?.let {
-                        Text(text = it, fontSize = 12.sp, color = Color.Gray)
-                    }
+                schedule.memo?.let {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = it,
+                        fontSize = 13.sp,
+                        color = Color(0xFF666666)
+                    )
                 }
+
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(
-                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
                 ) {
                     if (schedule.cost != null) {
                         Text(
-                            text = "금액 ${"%,d원".format(schedule.cost)}",
-                            color = Color(0xFF333333),
-                            fontSize = 12.sp
+                            text = "💰 ${"%,d원".format(schedule.cost)}",
+                            fontSize = 12.sp,
+                            color = Color(0xFF444444),
+                            fontWeight = FontWeight.Medium
                         )
                     } else {
                         Text(
-                            text = "💰 미정원", color = Color(0xFF999999), fontSize = 12.sp
+                            text = "💰 금액 미정",
+                            fontSize = 12.sp,
+                            color = Color(0xFFBBBBBB)
                         )
                     }
                 }
@@ -99,6 +119,7 @@ fun ScheduleItem(schedule: Schedule, onScheduleClicked: () -> Unit) {
         }
     }
 }
+
 
 /**
  * 스케쥴 상세 BottomSheet

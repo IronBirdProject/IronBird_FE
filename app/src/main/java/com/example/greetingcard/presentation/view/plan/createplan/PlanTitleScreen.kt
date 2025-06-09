@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -38,6 +37,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.greetingcard.presentation.navigation.Screen
+import com.example.greetingcard.presentation.view.home.planning.CustomBottomBar
+import com.example.greetingcard.presentation.viewModel.plan.PlanPreviewViewModel
 import com.example.greetingcard.presentation.viewModel.plan.createplan.PlanCreateViewModel
 
 
@@ -46,7 +47,8 @@ import com.example.greetingcard.presentation.viewModel.plan.createplan.PlanCreat
 fun PlanTitleScreen(
     navController: NavController,
     rootNavController: NavController,
-    planCreateViewModel: PlanCreateViewModel
+    planCreateViewModel: PlanCreateViewModel,
+    planPreviewViewModel: PlanPreviewViewModel
 ) {
     var title by remember { mutableStateOf("") }
     val isButtonEnabled = title.isNotBlank()
@@ -56,6 +58,7 @@ fun PlanTitleScreen(
 
 
     Scaffold(
+        containerColor = Color.White,
         topBar = {
             TopAppBar(
                 title = { Text("여행 이름을 지어주세요", style = MaterialTheme.typography.titleLarge) },
@@ -71,7 +74,16 @@ fun PlanTitleScreen(
                 )
             )
         },
-        containerColor = Color.White
+        bottomBar = {
+            CustomBottomBar(
+                label = "여행 만들기",
+                enabled = isButtonEnabled,
+                onBottomBarClick = {
+                    planCreateViewModel.setTitle(title)
+                    planCreateViewModel.createPlan()
+                }
+            )
+        }
     ) { padding ->
 
         Column(
@@ -97,27 +109,27 @@ fun PlanTitleScreen(
                         .height(60.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = Color.LightGray
+                        focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                     ),
                     singleLine = true,
                     textStyle = MaterialTheme.typography.bodyLarge
                 )
             }
 
-            Button(
-                onClick = {
-                    planCreateViewModel.setTitle(title)
-                    planCreateViewModel.createPlan()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                enabled = isButtonEnabled,
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("여행 만들기", style = MaterialTheme.typography.titleMedium)
-            }
+//            Button(
+//                onClick = {
+//                    planCreateViewModel.setTitle(title)
+//                    planCreateViewModel.createPlan()
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(52.dp),
+//                enabled = isButtonEnabled,
+//                shape = RoundedCornerShape(12.dp)
+//            ) {
+//                Text("여행 만들기", style = MaterialTheme.typography.titleMedium)
+//            }
         }
     }
 
@@ -150,6 +162,7 @@ fun PlanTitleScreen(
                         popUpTo(Screen.PlanCreate.route) { inclusive = true }
                         launchSingleTop = true
                     }
+//                    planPreviewViewModel.loadPlanPreviews() // 여행 목록 새로고침
                 }) {
                     Text("확인")
                 }

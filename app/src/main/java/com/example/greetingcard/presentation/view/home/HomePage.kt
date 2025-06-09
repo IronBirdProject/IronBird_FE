@@ -145,7 +145,12 @@ fun PlanUpcomingFloatingButton(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .clip(RoundedCornerShape(20.dp))
-            .clickable { navController.navigate("plan_detail/${plan?.id}") },
+            .clickable {
+                if (plan == null) {
+                    return@clickable
+                }
+                navController.navigate("plan_detail/${plan?.id}")
+            },
         color = Color.Transparent, // Surface 자체는 투명하게
         shadowElevation = 6.dp,
     ) {

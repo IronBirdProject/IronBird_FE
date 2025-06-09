@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,11 +15,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.Button
@@ -28,7 +33,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -140,8 +144,8 @@ fun PlanDetailContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
-//            .navigationBarsPadding(),
+            .background(Color.White)
+            .navigationBarsPadding(),
         contentPadding = PaddingValues(bottom = 20.dp)
     ) {
         item {
@@ -226,18 +230,26 @@ fun PlanDetailContent(
                             onScheduleClicked = { selectedSchedule = schedule })
                     }
 
-                    OutlinedButton(
+//                    OutlinedButton(
+//                        onClick = {
+//                            selectedDay = day
+//                            isAddLocationModalOpen = true
+//                        },
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(top = 12.dp),
+//                        shape = RoundedCornerShape(10.dp)
+//                    ) {
+//                        Text("할 일 추가", color = Color.Black)
+//                    }
+                    AddScheduleCircleButton(
                         onClick = {
                             selectedDay = day
                             isAddLocationModalOpen = true
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 12.dp),
-                        shape = RoundedCornerShape(10.dp)
-                    ) {
-                        Text("장소 추가")
-                    }
+                    )
+
+
                 }
             }
         }
@@ -249,7 +261,6 @@ fun PlanDetailContent(
             sheetState = addLocationSheetState,
             onDismissRequest = { isAddLocationModalOpen = false },
             containerColor = Color.White,
-            windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp) // 네비게이션 바 패딩 제거
         ) {
             AddScheduleBottomSheet(selectedDay = selectedDay, onSave = { desc, cost, memo, time ->
                 planDetailViewModel.addSchedule(
@@ -268,6 +279,7 @@ fun PlanDetailContent(
     // 여행 수정 다이얼로그
     if (isEditOptionSheetOpen) {
         ModalBottomSheet(
+            windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 20.dp),
             onDismissRequest = { isEditOptionSheetOpen = false },
             sheetState = rememberModalBottomSheetState(),
             containerColor = Color.White,
@@ -393,5 +405,33 @@ fun getImageForDestination(destination: String): Int {
         "상하이" -> R.drawable.shanghai
         "필리핀" -> R.drawable.philippines
         else -> R.drawable.travel_icon // 기본 이미지 리소스 설정 필요
+    }
+}
+
+
+@Composable
+fun AddScheduleCircleButton(
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFEFEFEF)) // 연회색 배경
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add, // Material의 + 아이콘
+                contentDescription = "할 일 추가",
+                tint = Color(0xFF666666), // 어두운 회색 (아이콘 색)
+                modifier = Modifier.size(24.dp)
+            )
+        }
     }
 }

@@ -89,7 +89,15 @@ class PlanPreviewViewModel @Inject constructor(
                 Log.d("플랜 목록 불러오기", "유저 ID: $uid, 로딩 시작")
                 val res = repository.getPlansByUserId(uid)
                 if (res.isSuccessful) {
-                    _planPreviews.value = res.body() ?: emptyList()
+                    val plans = res.body() ?: emptyList()
+                    _planPreviews.value = plans.sortedBy {
+                        try {
+                            LocalDate.parse(it.startedDate, dateFormatter)
+                        } catch (e: Exception) {
+                            LocalDate.MAX // 파싱 실패 시 가장 뒤로
+                        }
+                    }
+
                     _error.value = null
                 } else {
                     _error.value = "오류 코드: ${res.code()}"

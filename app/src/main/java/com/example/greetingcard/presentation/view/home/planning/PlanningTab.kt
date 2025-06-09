@@ -1,11 +1,13 @@
 package com.example.greetingcard.presentation.view.home.planning
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -69,7 +72,10 @@ fun PlanningScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF9F9F9))
-            .padding(horizontal = 20.dp)
+            .padding(horizontal = 20.dp),
+        contentPadding = PaddingValues(
+            bottom = 150.dp
+        )
     ) {
         item {
             Spacer(Modifier.height(24.dp))
@@ -105,14 +111,16 @@ fun PlanningScreen(
 //            FeaturesGrid(navController)
 //        }
 
-//        item {
-//            Spacer(Modifier.height(32.dp))
-//        }
+        item {
+            Spacer(Modifier.height(16.dp))
+            TravelTipSection()
+        }
     }
 }
 
 @Composable
 fun GreetingSection(user: UserInfo?) {
+    Log.d("GreetingSection", "User: $user")
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -227,6 +235,46 @@ fun PlanCreateSection(
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00CFFF))
             ) {
                 Text("여행 계획하기", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            }
+        }
+    }
+}
+
+@Composable
+fun TravelTipSection() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(2.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp)),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text("✈️ 여행 꿀팁", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Default.Lightbulb, contentDescription = null, tint = Color(0xFFFFC107))
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    "현지에서는 유심보다 eSIM이 더 저렴할 수 있어요!",
+                    fontSize = 14.sp,
+                    color = Color.DarkGray
+                )
+            }
+
+            Button(
+                onClick = { /* TODO: 추천 리스트 페이지 이동 */ },
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00CFFF)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("여행 체크리스트 보기")
             }
         }
     }

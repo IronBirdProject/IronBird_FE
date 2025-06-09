@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.greetingcard.R
 import com.example.greetingcard.data.model.dto.plan.PlanCreateDto
 import com.example.greetingcard.data.repository.plan.PlanRepository
+import com.example.greetingcard.data.source.local.SessionManager
 import com.example.greetingcard.presentation.viewModel.home.DestinationItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -19,18 +20,31 @@ import java.time.LocalDate
 
 @HiltViewModel
 class PlanCreateViewModel @Inject constructor(
-    private val planRepository: PlanRepository
+    private val planRepository: PlanRepository,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
     // Repository
 
+    // 유저 ID 가져오기
+    private val _userId = MutableStateFlow<Int?>(null)
+
     init {
         Log.d("PlanCreateViewModel", "ViewModel 초기화됨")
+        viewModelScope.launch {
+            sessionManager.userInfoFlow.collect { user ->
+                Log.d("PlanPreviewViewModel", "세션에서 유저 정보 수집: ${user.id}, ${user.name}")
+                if (user.id != 0) {
+                    _userId.value = user.id
+                }
+            }
+        }
     }
 
     override fun onCleared() {
         super.onCleared()
         Log.d("PlanCreateViewModel", "ViewModel이 해제됨")
     }
+
 
     /**
      * 날짜 선택 파트
@@ -88,6 +102,10 @@ class PlanCreateViewModel @Inject constructor(
         DestinationItem("강릉", R.drawable.gangneung),
         DestinationItem("경주", R.drawable.gyeongju),
         DestinationItem("여수", R.drawable.yeosu),
+        DestinationItem("일본", R.drawable.japan),
+        DestinationItem("몽골", R.drawable.mongolia),
+        DestinationItem("상하이", R.drawable.shanghai),
+        DestinationItem("필리핀", R.drawable.philippines)
     )
     private val _searchResults = MutableStateFlow<List<DestinationItem>>(emptyList())
     val searchResults: StateFlow<List<DestinationItem>> = _searchResults.asStateFlow()
@@ -156,13 +174,17 @@ class PlanCreateViewModel @Inject constructor(
     fun createPlan() {
         Log.d("플랜 생성", "클릭")
         viewModelScope.launch {
+            val uid = _userId.value ?: run {
+                Log.e("플랜 생성 실패", "유저 ID가 없습니다.")
+                return@launch
+            }
             _isLoading.value = true
             val newPlan: PlanCreateDto = PlanCreateDto(
                 title = _title.value,
                 startedDate = _selectedDates.value.startDate.toString(),
                 endDate = _selectedDates.value.endDate.toString(),
                 destination = _selectedDestination.value,
-                userId = 1 // TODO: 실제 사용자 ID로 변경 필요
+                userId = uid,
             )
             try {
                 planRepository.createPlan(newPlan)
@@ -179,7 +201,6 @@ class PlanCreateViewModel @Inject constructor(
         }
     }
 }
-
 // 플랜 생성
 //    fun createPlan(
 //
